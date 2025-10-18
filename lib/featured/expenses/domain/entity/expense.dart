@@ -13,7 +13,7 @@ class Expense extends Equatable {
   final double amount;
   final String category;
   final DateTime date;
-  final TransactionType type; // Nuevo campo
+  final TransactionType type;
 
   const Expense({
     this.id,
