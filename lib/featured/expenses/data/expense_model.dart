@@ -21,12 +21,16 @@ class ExpenseModel extends HiveObject {
   @HiveField(4)
   late DateTime date;
 
+  @HiveField(5)
+  late int type; // 0 = expense, 1 = income
+
   ExpenseModel({
     required this.expenseOwner,
     required this.expenseName,
     required this.amount,
     required this.category,
     required this.date,
+    required this.type,
   });
 
   factory ExpenseModel.fromEntity(Expense expense) {
@@ -36,6 +40,7 @@ class ExpenseModel extends HiveObject {
       amount: expense.amount,
       category: expense.category,
       date: expense.date,
+      type: expense.type == TransactionType.expense ? 0 : 1,
     );
   }
 
@@ -47,6 +52,7 @@ class ExpenseModel extends HiveObject {
       amount: amount,
       category: category,
       date: date,
+      type: type == 0 ? TransactionType.expense : TransactionType.income,
     );
   }
 }

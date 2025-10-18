@@ -21,6 +21,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     double amount,
     String category,
     DateTime date,
+    TransactionType type,
   ) async {
     try {
       // Crear el modelo
@@ -30,6 +31,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         amount: amount,
         category: category,
         date: date,
+        type: type == TransactionType.expense ? 0 : 1,
       );
 
       // Guardar en el DataSource
@@ -71,11 +73,11 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   Future<Either<Failure, Expense>> getExpense(int index) async {
     try {
       final models = localDataSource.getAllExpenses();
-      
+
       if (index < 0 || index >= models.length) {
         return const Left(NotFoundFailure('Gasto no encontrado'));
       }
-      
+
       final model = models[index];
       final entity = model.toEntity(id: index.toString());
       return Right(entity);
@@ -105,7 +107,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       // Convertir a modelo y actualizar
       final model = ExpenseModel.fromEntity(expense);
       await localDataSource.updateExpense(index, model);
-      
+
       return const Right(null);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
@@ -159,8 +161,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       // Obtener todos los gastos y filtrar manualmente
       final models = localDataSource.getAllExpenses();
       final filtered = models
-          .where((model) =>
-              model.category.toLowerCase() == category.toLowerCase())
+          .where(
+            (model) => model.category.toLowerCase() == category.toLowerCase(),
+          )
           .toList();
 
       final entities = filtered

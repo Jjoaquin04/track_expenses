@@ -62,6 +62,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         amount: event.amount,
         category: event.category,
         date: event.date,
+        type: event.type,
       ),
     );
 

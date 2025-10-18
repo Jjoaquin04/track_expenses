@@ -21,6 +21,7 @@ class AddExpenseEvent extends ExpenseEvent {
   final double amount;
   final String category;
   final DateTime date;
+  final TransactionType type;
 
   const AddExpenseEvent({
     required this.expenseOwner,
@@ -28,6 +29,7 @@ class AddExpenseEvent extends ExpenseEvent {
     required this.amount,
     required this.category,
     required this.date,
+    required this.type,
   });
 
   @override
@@ -37,6 +39,7 @@ class AddExpenseEvent extends ExpenseEvent {
     amount,
     category,
     date,
+    type,
   ];
 }
 

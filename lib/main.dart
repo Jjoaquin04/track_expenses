@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:track_expenses/core/constant/hive_constants.dart';
 import 'package:track_expenses/core/dependency_injection/dependecy_injection.dart';
+import 'package:track_expenses/core/utils/user_config.dart';
 import 'package:track_expenses/featured/expenses/data/expense_model.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/pages/expenses_screen.dart';
+import 'package:track_expenses/featured/expenses/presentation/pages/welcome_screen.dart';
 
 void main() async {
   // Initialize Hive
@@ -28,9 +30,27 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt.get<ExpenseBloc>(),
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: ExpensesScreen(),
+        home: FutureBuilder<bool>(
+          future: UserConfig.isUserConfigured(),
+          builder: (context, snapshot) {
+            // Mientras carga
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            // Si ya está configurado, ir a ExpensesScreen
+            if (snapshot.data == true) {
+              return const ExpensesScreen();
+            }
+
+            // Si es la primera vez, mostrar WelcomeScreen
+            return const WelcomeScreen();
+          },
+        ),
       ),
     );
   }

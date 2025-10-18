@@ -29,10 +29,12 @@ flutter:
   fonts: 
     - family: SEGOE_UI
       fonts:
-        - asset: assets/fonts/Segoe UI Bold Italic.ttf
-        - asset: assets/fonts/Segoe UI Bold.ttf
+        - asset: assets/fonts/SegoeUI-BoldItalic.ttf
           weight: 700
-        - asset: assets/fonts/Segoe UI Italic.ttf
           style: italic
-        - asset: assets/fonts/Segoe UI.ttf
+        - asset: assets/fonts/SegoeUI-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/SegoeUI-Italic.ttf
+          style: italic
+        - asset: assets/fonts/SegoeUI-Regular.ttf
   uses-material-design: true

@@ -17,6 +17,7 @@ class AddExpense extends Usecase<Expense, ExpenseParams> {
       params.amount,
       params.category,
       params.date,
+      params.type,
     );
   }
 }
@@ -27,6 +28,7 @@ class ExpenseParams extends Equatable {
   final double amount;
   final String category;
   final DateTime date;
+  final TransactionType type;
 
   const ExpenseParams({
     required this.expenseOwner,
@@ -34,6 +36,7 @@ class ExpenseParams extends Equatable {
     required this.amount,
     required this.category,
     required this.date,
+    required this.type,
   });
 
   @override
@@ -43,5 +46,6 @@ class ExpenseParams extends Equatable {
     amount,
     category,
     date,
+    type,
   ];
 }

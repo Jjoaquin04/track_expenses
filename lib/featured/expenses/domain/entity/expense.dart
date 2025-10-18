@@ -1,5 +1,11 @@
 import 'package:equatable/equatable.dart';
 
+// Enum para diferenciar entre gasto e ingreso
+enum TransactionType {
+  expense, // Gasto
+  income, // Ingreso
+}
+
 class Expense extends Equatable {
   final String? id;
   final String ownerExpense;
@@ -7,6 +13,7 @@ class Expense extends Equatable {
   final double amount;
   final String category;
   final DateTime date;
+  final TransactionType type; // Nuevo campo
 
   const Expense({
     this.id,
@@ -15,6 +22,7 @@ class Expense extends Equatable {
     required this.amount,
     required this.category,
     required this.date,
+    required this.type, // Nuevo campo requerido
   });
 
   @override
@@ -25,5 +33,6 @@ class Expense extends Equatable {
     amount,
     category,
     date,
+    type, // Añadido a props
   ];
 }
