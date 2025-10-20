@@ -16,6 +16,7 @@ dependencies:
   dartz: ^0.10.1
   flutter_bloc: ^8.1.6
   get_it: ^8.2.0
+  home_widget: ^0.8.1
 
 dev_dependencies:
   flutter_test:
