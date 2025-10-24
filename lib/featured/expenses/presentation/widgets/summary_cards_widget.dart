@@ -29,7 +29,7 @@ class SummaryCardsWidget extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
               child: Text(
-                "Seguimiento de Gastos Personales",
+                "Seguimiento de Movimientos Personales",
                 style: TextStyle(
                   fontFamily: "SEGOE_UI",
                   fontSize: 35,
@@ -66,7 +66,7 @@ class SummaryCardsWidget extends StatelessWidget {
   }
 }
 
-class _SummaryCard extends StatelessWidget {
+class _SummaryCard extends StatefulWidget {
   final String label;
   final double amount;
   final IconData icon;
@@ -82,50 +82,86 @@ class _SummaryCard extends StatelessWidget {
   });
 
   @override
+  State<_SummaryCard> createState() => _SummaryCardState();
+}
+
+class _SummaryCardState extends State<_SummaryCard> {
+  bool _isPressed = false;
+  @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        height: 100,
-        margin: EdgeInsets.only(
-          right: isExpense ? 8.0 : 0,
-          left: isExpense ? 0 : 8.0,
-        ),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(icon, color: color, size: 20),
-                  const SizedBox(width: 4),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontFamily: "SEGOE_UI",
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: color,
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 100),
+          height: _isPressed ? 98 : 100,
+          margin: EdgeInsets.only(
+            right: widget.isExpense ? 8.0 : 0,
+            left: widget.isExpense ? 0 : 8.0,
+          ),
+          transform: Matrix4.identity()
+            ..scaleByDouble(
+              _isPressed ? 0.9 : 1.0,
+              _isPressed ? 0.9 : 1.0,
+              _isPressed ? 0.9 : 1.0,
+              1.0,
+            ),
+          transformAlignment: AlignmentGeometry.center,
+          decoration: BoxDecoration(
+            color: widget.color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: widget.color.withValues(alpha: 0.3),
+              width: 1,
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(widget.icon, color: widget.color, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      widget.label,
+                      style: TextStyle(
+                        fontFamily: "SEGOE_UI",
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: widget.color,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "\$${amount.toStringAsFixed(2)}",
-                style: TextStyle(
-                  fontFamily: "SEGOE_UI",
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.amount.toStringAsFixed(2),
+                      style: TextStyle(
+                        fontFamily: "SEGOE_UI",
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: widget.color,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Icon(
+                        Icons.euro_rounded,
+                        color: widget.color,
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

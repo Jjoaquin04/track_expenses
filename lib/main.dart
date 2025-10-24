@@ -35,7 +35,6 @@ class MainApp extends StatelessWidget {
         home: FutureBuilder<bool>(
           future: UserConfig.isUserConfigured(),
           builder: (context, snapshot) {
-            // Mientras carga
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),

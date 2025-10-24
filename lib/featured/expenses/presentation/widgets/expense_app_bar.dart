@@ -86,14 +86,23 @@ class _TotalBalanceWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    "\$${currentBalance.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontFamily: "SEGOE_UI",
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.primary,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        currentBalance.toStringAsFixed(2),
+                        style: const TextStyle(
+                          fontFamily: "SEGOE_UI",
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.primary,
+                        ),
+                      ),
+                      Icon(
+                        Icons.euro_rounded,
+                        color: AppColor.primary,
+                        size: 18,
+                      ),
+                    ],
                   ),
                 ],
               ),

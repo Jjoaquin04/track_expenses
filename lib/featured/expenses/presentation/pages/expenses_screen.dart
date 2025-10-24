@@ -31,6 +31,7 @@ class ExpensesScreenState extends State<ExpensesScreen> {
     required String name,
     required String category,
     required String amount,
+    required DateTime date,
     required TransactionType type,
   }) async {
     // Validar campos vacíos
@@ -56,7 +57,7 @@ class ExpensesScreenState extends State<ExpensesScreen> {
         expenseName: name.trim(),
         amount: parsedAmount,
         category: category,
-        date: DateTime.now(),
+        date: date,
         type: type,
       ),
     );
@@ -143,7 +144,7 @@ class ExpensesScreenState extends State<ExpensesScreen> {
       if (state.expenses.isEmpty) {
         return const Center(
           child: Text(
-            "No hay gastos registrados",
+            "No hay movimientos registrados",
             style: TextStyle(
               fontFamily: "SEGOE_UI",
               fontSize: 16,

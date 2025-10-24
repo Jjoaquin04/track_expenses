@@ -8,6 +8,7 @@ class AddExpenseBottomSheet extends StatefulWidget {
     required String name,
     required String category,
     required String amount,
+    required DateTime date,
     required TransactionType type,
   })
   onSave;
@@ -21,7 +22,9 @@ class AddExpenseBottomSheet extends StatefulWidget {
 class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
   final nameController = TextEditingController();
   final amountController = TextEditingController();
+  final dateController = TextEditingController();
   String category = "";
+  DateTime? picked;
   TransactionType type = TransactionType.expense;
 
   @override
@@ -34,7 +37,22 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
   void dispose() {
     nameController.dispose();
     amountController.dispose();
+    dateController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? selected = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selected != null) {
+      picked = selected;
+      dateController.text = picked.toString().split(" ")[0];
+    }
   }
 
   @override
@@ -247,58 +265,152 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                         .toList(),
               ),
               const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 15.0),
+                      child: Column(
+                        children: [
+                          const Text(
+                            "Cantidad",
+                            style: TextStyle(
+                              fontFamily: "SEGOE_UI",
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColor.secondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: amountController,
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: "0.00",
+                              prefixIcon: Icon(
+                                Icons.euro_rounded,
+                                color: AppColor.primary,
+                              ),
+                              prefixStyle: const TextStyle(
+                                color: AppColor.primary,
+                                fontFamily: "SEGOE_UI",
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              hintStyle: TextStyle(
+                                color: AppColor.secondary.withValues(
+                                  alpha: 0.5,
+                                ),
+                                fontFamily: "SEGOE_UI",
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: AppColor.secondary.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: AppColor.secondary.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: AppColor.primary,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            style: const TextStyle(
+                              fontFamily: "SEGOE_UI",
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
-              // Monto
-              const Text(
-                "Cantidad",
-                style: TextStyle(
-                  fontFamily: "SEGOE_UI",
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColor.secondary,
-                ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Fecha",
+                          style: TextStyle(
+                            fontFamily: "SEGOE_UI",
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.secondary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: dateController,
+                          decoration: InputDecoration(
+                            hintText: "-",
+                            prefixIcon: Icon(
+                              Icons.calendar_month_rounded,
+                              color: AppColor.primary,
+                            ),
+                            prefixStyle: const TextStyle(
+                              color: AppColor.primary,
+                              fontFamily: "SEGOE_UI",
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            hintStyle: TextStyle(
+                              color: AppColor.secondary.withValues(alpha: 0.5),
+                              fontFamily: "SEGOE_UI",
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColor.secondary.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColor.secondary.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: AppColor.primary,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          readOnly: true,
+                          onTap: () {
+                            _selectDate();
+                          },
+                          style: const TextStyle(
+                            fontFamily: "SEGOE_UI",
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: amountController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                decoration: InputDecoration(
-                  hintText: "0.00",
-                  prefixText: "\$ ",
-                  prefixStyle: const TextStyle(
-                    color: AppColor.primary,
-                    fontFamily: "SEGOE_UI",
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  hintStyle: TextStyle(
-                    color: AppColor.secondary.withValues(alpha: 0.5),
-                    fontFamily: "SEGOE_UI",
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColor.secondary.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColor.secondary.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppColor.primary,
-                      width: 2,
-                    ),
-                  ),
-                ),
-                style: const TextStyle(fontFamily: "SEGOE_UI", fontSize: 16),
-              ),
+
               const SizedBox(height: 30),
 
               // Botón de guardar
@@ -307,10 +419,12 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () {
+                    final dateToUse = picked ?? DateTime.now();
                     widget.onSave(
                       name: nameController.text,
                       category: category,
                       amount: amountController.text,
+                      date: dateToUse,
                       type: type,
                     );
                   },
