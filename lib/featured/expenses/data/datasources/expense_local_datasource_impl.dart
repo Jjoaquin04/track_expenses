@@ -14,30 +14,35 @@ class ExpenseLocalDatasourceImpl implements ExpenseLocalDataSource {
   }
 
   @override
-  Future<void> addExpense(ExpenseModel expense) async {
+  Future<String> addExpense(ExpenseModel expense) async {
     try {
       final box = _getBox();
-      await box.add(expense);
+      final key = await box.add(expense);
+      return key.toString();
     } catch (e) {
       throw CacheException('Error al guardar el gasto');
     }
   }
 
   @override
-  Future<void> deleteExpense(int index) async {
+  Future<void> deleteExpense(String key) async {
     try {
       final box = _getBox();
-      await box.deleteAt(index);
+      final keyInt = int.tryParse(key);
+      if (keyInt == null) {
+        throw CacheException('Key inválida para eliminar gasto');
+      }
+      await box.delete(keyInt);
     } catch (e) {
-      throw CacheException('Error al eleminar el gasto');
+      throw CacheException('Error al eliminar el gasto');
     }
   }
 
   @override
-  List<ExpenseModel> getAllExpenses() {
+  Map<String, ExpenseModel> getAllExpenses() {
     try {
       final box = _getBox();
-      return box.values.toList();
+      return box.toMap().map((key, value) => MapEntry(key.toString(), value));
     } catch (e) {
       throw CacheException('Error al obtener todos los gastos');
     }
@@ -54,15 +59,44 @@ class ExpenseLocalDatasourceImpl implements ExpenseLocalDataSource {
   }
 
   @override
-  Future<void> updateExpense(int index, ExpenseModel expense) async {
+  Future<void> updateExpense(String key, ExpenseModel expense) async {
     try {
       final box = _getBox();
-      if (index < 0 || index >= box.length) {
-        throw CacheException('Índice fuera de rango: $index');
+      final keyInt = int.tryParse(key);
+      if (keyInt == null) {
+        throw CacheException('Key inválida para actualizar gasto');
       }
-      await box.putAt(index, expense);
+      await box.put(keyInt, expense);
     } catch (e) {
       throw CacheException('Error al actualizar el gasto: $e');
+    }
+  }
+
+  @override
+  Map<String, ExpenseModel> getExpensesByMonth(DateTime time) {
+    try {
+      final box = _getBox();
+      // Crear fecha de inicio del mes
+      final startOfMonth = DateTime(time.year, time.month, 1);
+      return box
+          .toMap()
+          .map((key, value) => MapEntry(key.toString(), value))
+          .entries
+          .where(
+            (entry) =>
+                // Gastos del mes actual
+                (entry.value.date.year == time.year &&
+                    entry.value.date.month == time.month) ||
+                // Gastos fijos de meses anteriores
+                (entry.value.fixedExpense == 1 &&
+                    entry.value.date.isBefore(startOfMonth)),
+          )
+          .fold<Map<String, ExpenseModel>>(
+            {},
+            (map, entry) => map..[entry.key] = entry.value,
+          );
+    } catch (e) {
+      throw CacheException("Error al obtener los gastos de este mes");
     }
   }
 }

@@ -82,3 +82,32 @@ class ExpenseTotalCalculated extends ExpenseState {
   @override
   List<Object?> get props => [total];
 }
+
+/// Estado: Modo de selección múltiple activado
+class ExpenseSelectionMode extends ExpenseState {
+  final List<Expense> expenses;
+  final Set<String> selectedIds;
+  final double? totalAmount;
+
+  const ExpenseSelectionMode({
+    required this.expenses,
+    required this.selectedIds,
+    this.totalAmount,
+  });
+
+  @override
+  List<Object?> get props => [expenses, selectedIds, totalAmount];
+
+  /// Crear una copia con valores actualizados
+  ExpenseSelectionMode copyWith({
+    List<Expense>? expenses,
+    Set<String>? selectedIds,
+    double? totalAmount,
+  }) {
+    return ExpenseSelectionMode(
+      expenses: expenses ?? this.expenses,
+      selectedIds: selectedIds ?? this.selectedIds,
+      totalAmount: totalAmount ?? this.totalAmount,
+    );
+  }
+}

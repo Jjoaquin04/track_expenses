@@ -3,6 +3,7 @@ import 'package:track_expenses/core/usecases/usecase.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/add_expense.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/delete_expense.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/get_expenses.dart';
+import 'package:track_expenses/featured/expenses/domain/usecases/get_expenses_by_month.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/update_expense.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
@@ -12,18 +13,27 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   final AddExpense addExpenseUseCase;
   final UpdateExpense updateExpenseUseCase;
   final DeleteExpense deleteExpenseUseCase;
+  final GetExpensesByMonth getExpensesByMonthUseCase;
 
   ExpenseBloc({
     required this.getExpensesUseCase,
     required this.addExpenseUseCase,
     required this.updateExpenseUseCase,
     required this.deleteExpenseUseCase,
+    required this.getExpensesByMonthUseCase,
   }) : super(const ExpenseInitial()) {
     // Registrar manejadores de eventos
     on<LoadExpensesEvent>(_onLoadExpenses);
     on<AddExpenseEvent>(_onAddExpense);
     on<UpdateExpenseEvent>(_onUpdateExpense);
     on<DeleteExpenseEvent>(_onDeleteExpense);
+    on<GetExpensesByMonthEvent>(_getMonthExpenses);
+    on<EnableSelectionModeEvent>(_onEnableSelectionMode);
+    on<DisableSelectionModeEvent>(_onDisableSelectionMode);
+    on<ToggleExpenseSelectionEvent>(_onToggleExpenseSelection);
+    on<SelectAllExpensesEvent>(_onSelectAllExpenses);
+    on<DeselectAllExpensesEvent>(_onDeselectAllExpenses);
+    on<DeleteSelectedExpensesEvent>(_onDeleteSelectedExpenses);
   }
 
   /// Cargar todos los gastos
@@ -63,6 +73,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         category: event.category,
         date: event.date,
         type: event.type,
+        fixedExpense: event.fixedExpense,
       ),
     );
 
@@ -71,7 +82,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     ) {
       emit(ExpenseAdded(expense: expense));
       // Recargar la lista de gastos
-      add(const LoadExpensesEvent());
+      add(GetExpensesByMonthEvent(time: DateTime.now()));
     });
   }
 
@@ -86,8 +97,8 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
     result.fold((failure) => emit(ExpenseError(message: failure.message)), (_) {
       emit(ExpenseUpdated(expense: event.expense));
-      // Recargar la lista de gastos
-      add(const LoadExpensesEvent());
+      // Recargar gastos del mes actual
+      add(GetExpensesByMonthEvent(time: DateTime.now()));
     });
   }
 
@@ -102,8 +113,126 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
     result.fold((failure) => emit(ExpenseError(message: failure.message)), (_) {
       emit(const ExpenseDeleted());
-      // Recargar la lista de gastos
-      add(const LoadExpensesEvent());
+      // Recargar gastos del mes actual
+      add(GetExpensesByMonthEvent(time: DateTime.now()));
     });
+  }
+
+  Future<void> _getMonthExpenses(
+    GetExpensesByMonthEvent event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    emit(const ExpenseLoading());
+
+    final result = await getExpensesByMonthUseCase(
+      ExpensesByMonthParams(time: event.time),
+    );
+
+    result.fold(
+      (failure) => emit(ExpenseError(message: failure.message)),
+      (expenses) => emit(ExpenseLoaded(expenses: expenses)),
+    );
+  }
+
+  /// Activar modo de selección múltiple
+  Future<void> _onEnableSelectionMode(
+    EnableSelectionModeEvent event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    if (state is ExpenseLoaded) {
+      final loadedState = state as ExpenseLoaded;
+      emit(
+        ExpenseSelectionMode(
+          expenses: loadedState.expenses,
+          selectedIds: {},
+          totalAmount: loadedState.totalAmount,
+        ),
+      );
+    }
+  }
+
+  /// Desactivar modo de selección múltiple
+  Future<void> _onDisableSelectionMode(
+    DisableSelectionModeEvent event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    if (state is ExpenseSelectionMode) {
+      final selectionState = state as ExpenseSelectionMode;
+      emit(
+        ExpenseLoaded(
+          expenses: selectionState.expenses,
+          totalAmount: selectionState.totalAmount,
+        ),
+      );
+    }
+  }
+
+  /// Seleccionar/deseleccionar un gasto
+  Future<void> _onToggleExpenseSelection(
+    ToggleExpenseSelectionEvent event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    if (state is ExpenseSelectionMode) {
+      final selectionState = state as ExpenseSelectionMode;
+      final selectedIds = Set<String>.from(selectionState.selectedIds);
+
+      if (selectedIds.contains(event.expenseId)) {
+        selectedIds.remove(event.expenseId);
+      } else {
+        selectedIds.add(event.expenseId);
+      }
+
+      emit(selectionState.copyWith(selectedIds: selectedIds));
+    }
+  }
+
+  /// Seleccionar todos los gastos
+  Future<void> _onSelectAllExpenses(
+    SelectAllExpensesEvent event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    if (state is ExpenseSelectionMode) {
+      final selectionState = state as ExpenseSelectionMode;
+      final allIds = selectionState.expenses
+          .where((e) => e.id != null)
+          .map((e) => e.id!)
+          .toSet();
+
+      emit(selectionState.copyWith(selectedIds: allIds));
+    }
+  }
+
+  /// Deseleccionar todos los gastos
+  Future<void> _onDeselectAllExpenses(
+    DeselectAllExpensesEvent event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    if (state is ExpenseSelectionMode) {
+      final selectionState = state as ExpenseSelectionMode;
+      emit(selectionState.copyWith(selectedIds: {}));
+    }
+  }
+
+  /// Eliminar gastos seleccionados
+  Future<void> _onDeleteSelectedExpenses(
+    DeleteSelectedExpensesEvent event,
+    Emitter<ExpenseState> emit,
+  ) async {
+    if (state is ExpenseSelectionMode) {
+      final selectionState = state as ExpenseSelectionMode;
+
+      emit(const ExpenseLoading());
+
+      // Eliminar cada gasto seleccionado
+      for (final expenseId in selectionState.selectedIds) {
+        final expense = selectionState.expenses.firstWhere(
+          (e) => e.id == expenseId,
+        );
+        await deleteExpenseUseCase(expense);
+      }
+
+      // Recargar gastos del mes actual
+      add(GetExpensesByMonthEvent(time: DateTime.now()));
+    }
   }
 }

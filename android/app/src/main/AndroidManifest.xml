@@ -26,7 +26,14 @@
             </intent-filter>
         </activity>
         <activity 
-            android:name=".QuickEntryActivity"
+            android:name=".QuickOutputActivity"
+            android:theme="@style/Theme.App.DialogActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask" 
+        />
+        <activity 
+            android:name=".QuickIncomeActivity"
             android:theme="@style/Theme.App.DialogActivity"
             android:exported="true"
             android:excludeFromRecents="true"
@@ -42,6 +49,17 @@
                 <meta-data
                     android:name="android.appwidget.provider"
                     android:resource="@xml/output_widget_info"/>
+            </receiver>
+        <receiver
+                android:name=".InputWidgetProvider"
+                android:label="Añadir un ingreso"
+                android:exported="true">
+                <intent-filter>
+                    <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                </intent-filter>
+                <meta-data
+                    android:name="android.appwidget.provider"
+                    android:resource="@xml/input_widget_info"/>
             </receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

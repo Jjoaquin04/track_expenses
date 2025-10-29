@@ -22,6 +22,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     String category,
     DateTime date,
     TransactionType type,
+    int fixedExpense,
   ) async {
     try {
       // Crear el modelo
@@ -32,13 +33,14 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         category: category,
         date: date,
         type: type == TransactionType.expense ? 0 : 1,
+        fixedExpense: fixedExpense,
       );
 
-      // Guardar en el DataSource
-      await localDataSource.addExpense(model);
+      // Guardar en el DataSource y obtener la key
+      final key = await localDataSource.addExpense(model);
 
-      // Retornar la entidad creada
-      final entity = model.toEntity();
+      // Retornar la entidad creada con ID
+      final entity = model.toEntity(id: key);
       return Right(entity);
     } on CacheException catch (e) {
       // Convertir Exception técnica en Failure semántica
@@ -52,35 +54,14 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   Future<Either<Failure, List<Expense>>> getExpenses() async {
     try {
       // Obtener modelos del DataSource
-      final models = localDataSource.getAllExpenses();
+      final modelsMap = localDataSource.getAllExpenses();
 
-      // Convertir de Modelos a Entidades con su índice como ID
-      final entities = models
-          .asMap()
-          .entries
-          .map((entry) => entry.value.toEntity(id: entry.key.toString()))
+      // Convertir de Modelos a Entidades manteniendo las keys como IDs
+      final entities = modelsMap.entries
+          .map((entry) => entry.value.toEntity(id: entry.key))
           .toList();
 
       return Right(entities);
-    } on CacheException catch (e) {
-      return Left(CacheFailure(e.message));
-    } catch (e) {
-      return Left(UnexpectedFailure(e.toString()));
-    }
-  }
-
-  // Método auxiliar - No está en el contrato del Repository
-  Future<Either<Failure, Expense>> getExpense(int index) async {
-    try {
-      final models = localDataSource.getAllExpenses();
-
-      if (index < 0 || index >= models.length) {
-        return const Left(NotFoundFailure('Gasto no encontrado'));
-      }
-
-      final model = models[index];
-      final entity = model.toEntity(id: index.toString());
-      return Right(entity);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } catch (e) {
@@ -106,7 +87,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
       // Convertir a modelo y actualizar
       final model = ExpenseModel.fromEntity(expense);
-      await localDataSource.updateExpense(index, model);
+      await localDataSource.updateExpense(expense.id!, model);
 
       return const Right(null);
     } on CacheException catch (e) {
@@ -126,13 +107,8 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         );
       }
 
-      // Convertir ID string a int
-      final index = int.tryParse(expense.id!);
-      if (index == null) {
-        return const Left(ValidationFailure('ID de gasto inválido'));
-      }
-
-      await localDataSource.deleteExpense(index);
+      // Convertir ID string a int (no es necesario, ahora usamos String directamente)
+      await localDataSource.deleteExpense(expense.id!);
       return const Right(null);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
@@ -153,25 +129,15 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     }
   }
 
-  // Método auxiliar - No está en el contrato del Repository
-  Future<Either<Failure, List<Expense>>> getExpensesByCategory(
-    String category,
+  @override
+  Future<Either<Failure, List<Expense>>> getExpensesByMonth(
+    DateTime date,
   ) async {
     try {
-      // Obtener todos los gastos y filtrar manualmente
-      final models = localDataSource.getAllExpenses();
-      final filtered = models
-          .where(
-            (model) => model.category.toLowerCase() == category.toLowerCase(),
-          )
+      final modelsMap = localDataSource.getExpensesByMonth(date);
+      final entities = modelsMap.entries
+          .map((entry) => entry.value.toEntity(id: entry.key))
           .toList();
-
-      final entities = filtered
-          .asMap()
-          .entries
-          .map((entry) => entry.value.toEntity(id: entry.key.toString()))
-          .toList();
-
       return Right(entities);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));

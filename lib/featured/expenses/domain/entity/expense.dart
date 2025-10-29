@@ -14,6 +14,7 @@ class Expense extends Equatable {
   final String category;
   final DateTime date;
   final TransactionType type;
+  final int fixedExpense;
 
   const Expense({
     this.id,
@@ -22,7 +23,8 @@ class Expense extends Equatable {
     required this.amount,
     required this.category,
     required this.date,
-    required this.type, // Nuevo campo requerido
+    required this.type,
+    required this.fixedExpense,
   });
 
   @override
@@ -33,6 +35,7 @@ class Expense extends Equatable {
     amount,
     category,
     date,
-    type, // Añadido a props
+    type,
+    fixedExpense,
   ];
 }

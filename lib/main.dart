@@ -41,12 +41,10 @@ class MainApp extends StatelessWidget {
               );
             }
 
-            // Si ya está configurado, ir a ExpensesScreen
             if (snapshot.data == true) {
               return const ExpensesScreen();
             }
 
-            // Si es la primera vez, mostrar WelcomeScreen
             return const WelcomeScreen();
           },
         ),

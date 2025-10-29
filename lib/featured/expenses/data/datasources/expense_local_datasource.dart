@@ -1,9 +1,10 @@
 import 'package:track_expenses/featured/expenses/data/expense_model.dart';
 
 abstract class ExpenseLocalDataSource {
-  Future<void> addExpense(ExpenseModel expense);
-  List<ExpenseModel> getAllExpenses();
-  Future<void> updateExpense(int index, ExpenseModel expense);
-  Future<void> deleteExpense(int index);
+  Future<String> addExpense(ExpenseModel expense);
+  Map<String, ExpenseModel> getAllExpenses();
+  Future<void> updateExpense(String key, ExpenseModel expense);
+  Future<void> deleteExpense(String key);
+  Map<String, ExpenseModel> getExpensesByMonth(DateTime time);
   double getTotalExpenses();
 }

@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:track_expenses/core/constant/hive_constants.dart';
 import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
-
 part 'expense_model.g.dart';
 
 @HiveType(typeId: HiveConstants.expenseTypeId)
@@ -24,6 +23,9 @@ class ExpenseModel extends HiveObject {
   @HiveField(5)
   late int type; // 0 = expense, 1 = income
 
+  @HiveField(6)
+  late int fixedExpense; // 0 = no gasto fijo 1 = gasto fijo
+
   ExpenseModel({
     required this.expenseOwner,
     required this.expenseName,
@@ -31,6 +33,7 @@ class ExpenseModel extends HiveObject {
     required this.category,
     required this.date,
     required this.type,
+    required this.fixedExpense,
   });
 
   factory ExpenseModel.fromEntity(Expense expense) {
@@ -41,6 +44,7 @@ class ExpenseModel extends HiveObject {
       category: expense.category,
       date: expense.date,
       type: expense.type == TransactionType.expense ? 0 : 1,
+      fixedExpense: expense.fixedExpense,
     );
   }
 
@@ -53,6 +57,7 @@ class ExpenseModel extends HiveObject {
       category: category,
       date: date,
       type: type == 0 ? TransactionType.expense : TransactionType.income,
+      fixedExpense: fixedExpense,
     );
   }
 }

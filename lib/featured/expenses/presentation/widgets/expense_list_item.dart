@@ -4,48 +4,141 @@ import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
 
 class ExpenseListItem extends StatelessWidget {
   final Expense expense;
+  final VoidCallback? onLongPress;
+  final VoidCallback? onTap;
+  final bool isSelectionMode;
+  final bool isSelected;
 
-  const ExpenseListItem({super.key, required this.expense});
+  const ExpenseListItem({
+    super.key,
+    required this.expense,
+    this.onLongPress,
+    this.onTap,
+    this.isSelectionMode = false,
+    this.isSelected = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Columna izquierda: Fecha y Categoría
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _DateRow(date: expense.date),
-              const SizedBox(height: 8),
-              _CategoryChip(category: expense.category),
+    return GestureDetector(
+      onLongPress: onLongPress,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Checkbox para modo selección
+            if (isSelectionMode) ...[
+              Checkbox(
+                value: isSelected,
+                onChanged: (value) {
+                  if (onTap != null) onTap!();
+                },
+                activeColor: AppColor.primary,
+              ),
+              const SizedBox(width: 12),
             ],
-          ),
-          const SizedBox(width: 16),
-          // Columna derecha: Nombre y Precio
-          Expanded(
-            child: Column(
+            // Columna izquierda: Fecha y Categoría
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  expense.nameExpense,
-                  style: const TextStyle(
-                    fontFamily: "SEGOE_UI",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                _AmountText(amount: expense.amount, type: expense.type),
+                _DateRow(date: expense.date),
+                const SizedBox(height: 8),
+                _CategoryChip(category: expense.category),
               ],
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+            // Columna derecha: Nombre y Precio
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        expense.nameExpense,
+                        style: const TextStyle(
+                          fontFamily: "SEGOE_UI",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 2,
+                      ),
+                      if (expense.fixedExpense == 1) ...[
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    side: BorderSide(
+                                      color: AppColor.primary,
+                                      width: 2.0,
+                                    ),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.info_outline_rounded,
+                                        size: 30,
+                                        color: AppColor.primary,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const Expanded(
+                                        child: Text(
+                                          "Información de movimiento fijo",
+                                          style: TextStyle(
+                                            fontFamily: "SEGOE_UI",
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const SizedBox(height: 12),
+                                      const Text(
+                                        "Este gasto está marcado como fijo. "
+                                        "Los movimientos fijos son aquellos que se repiten "
+                                        "mensualmente, es decir, se añaden automáticamente.",
+                                        style: TextStyle(
+                                          fontFamily: "SEGOE_UI",
+                                          fontSize: 18,
+                                          color: Colors.black87,
+                                        ),
+                                        textAlign: TextAlign.start,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: const Icon(
+                            Icons.push_pin,
+                            size: 16,
+                            color: AppColor.primary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  _AmountText(amount: expense.amount, type: expense.type),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -110,16 +203,21 @@ class _AmountText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isExpense = type == TransactionType.expense;
-    return Text(
-      isExpense
-          ? "- \$${amount.toStringAsFixed(2)}"
-          : "\$${amount.toStringAsFixed(2)}",
-      style: const TextStyle(
-        fontFamily: "SEGOE_UI",
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: AppColor.primary,
-      ),
+    return Row(
+      children: [
+        Text(
+          isExpense
+              ? "-${amount.toStringAsFixed(2)}"
+              : "\$${amount.toStringAsFixed(2)}",
+          style: const TextStyle(
+            fontFamily: "SEGOE_UI",
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColor.primary,
+          ),
+        ),
+        Icon(Icons.euro_rounded, color: AppColor.primary, size: 18),
+      ],
     );
   }
 }

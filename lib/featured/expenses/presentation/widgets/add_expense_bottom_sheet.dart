@@ -10,6 +10,7 @@ class AddExpenseBottomSheet extends StatefulWidget {
     required String amount,
     required DateTime date,
     required TransactionType type,
+    required int fixedExpense,
   })
   onSave;
 
@@ -23,6 +24,7 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
   final nameController = TextEditingController();
   final amountController = TextEditingController();
   final dateController = TextEditingController();
+  bool isFixed = false;
   String category = "";
   DateTime? picked;
   TransactionType type = TransactionType.expense;
@@ -101,65 +103,107 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // Tipo de transacción (Gasto o Ingreso)
-              const Text(
-                "Tipo",
-                style: TextStyle(
-                  fontFamily: "SEGOE_UI",
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColor.secondary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              DropdownMenu<TransactionType>(
-                onSelected: (TransactionType? value) {
-                  setState(() {
-                    type = value ?? TransactionType.expense;
-                    // Resetear categoría al cambiar de tipo
-                    category = type == TransactionType.expense
-                        ? ExpensesCategory.expenseCategory[0]
-                        : ExpensesCategory.incomeCategory[0];
-                  });
-                },
-                width: MediaQuery.of(context).size.width - 48,
-                initialSelection: TransactionType.expense,
-                textStyle: const TextStyle(
-                  fontFamily: "SEGOE_UI",
-                  fontSize: 16,
-                ),
-                inputDecorationTheme: InputDecorationTheme(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColor.secondary.withValues(alpha: 0.3),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Tipo",
+                          style: TextStyle(
+                            fontFamily: "SEGOE_UI",
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.secondary,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        const SizedBox(height: 8),
+                        DropdownMenu<TransactionType>(
+                          onSelected: (TransactionType? value) {
+                            setState(() {
+                              type = value ?? TransactionType.expense;
+                              // Resetear categoría al cambiar de tipo
+                              category = type == TransactionType.expense
+                                  ? ExpensesCategory.expenseCategory[0]
+                                  : ExpensesCategory.incomeCategory[0];
+                            });
+                          },
+                          width: MediaQuery.of(context).size.width - 48,
+                          initialSelection: TransactionType.expense,
+                          textStyle: const TextStyle(
+                            fontFamily: "SEGOE_UI",
+                            fontSize: 16,
+                          ),
+                          inputDecorationTheme: InputDecorationTheme(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColor.secondary.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColor.secondary.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: AppColor.primary,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          dropdownMenuEntries: const [
+                            DropdownMenuEntry(
+                              value: TransactionType.expense,
+                              label: "Gasto",
+                              leadingIcon: Icon(
+                                Icons.arrow_downward,
+                                color: Colors.red,
+                              ),
+                            ),
+                            DropdownMenuEntry(
+                              value: TransactionType.income,
+                              label: "Ingreso",
+                              leadingIcon: Icon(
+                                Icons.arrow_upward,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColor.secondary.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: AppColor.primary,
-                      width: 2,
-                    ),
-                  ),
-                ),
-                dropdownMenuEntries: const [
-                  DropdownMenuEntry(
-                    value: TransactionType.expense,
-                    label: "Gasto",
-                    leadingIcon: Icon(Icons.arrow_downward, color: Colors.red),
-                  ),
-                  DropdownMenuEntry(
-                    value: TransactionType.income,
-                    label: "Ingreso",
-                    leadingIcon: Icon(Icons.arrow_upward, color: Colors.green),
+                  Column(
+                    children: [
+                      const Text(
+                        "Fijo",
+                        style: TextStyle(
+                          fontFamily: "SEGOE_UI",
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColor.secondary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Checkbox(
+                        value: isFixed,
+                        onChanged: (_) => setState(() {
+                          isFixed = !isFixed;
+                        }),
+                        activeColor: AppColor.primary,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -426,6 +470,7 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                       amount: amountController.text,
                       date: dateToUse,
                       type: type,
+                      fixedExpense: isFixed ? 1 : 0,
                     );
                   },
                   style: ElevatedButton.styleFrom(

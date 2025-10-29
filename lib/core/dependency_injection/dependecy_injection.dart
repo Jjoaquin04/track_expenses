@@ -7,6 +7,7 @@ import 'package:track_expenses/featured/expenses/domain/usecases/add_expense.dar
 import 'package:track_expenses/featured/expenses/domain/usecases/delete_expense.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/get_expenses.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/update_expense.dart';
+import 'package:track_expenses/featured/expenses/domain/usecases/get_expenses_by_month.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/bloc.dart';
 
 final getIt = GetIt.instance;
@@ -29,12 +30,17 @@ void setUpDependencyInjection() {
 
   getIt.registerLazySingleton(() => UpdateExpense(getIt<ExpenseRepository>()));
 
+  getIt.registerLazySingleton(
+    () => GetExpensesByMonth(getIt<ExpenseRepository>()),
+  );
+
   getIt.registerFactory<ExpenseBloc>(
     () => ExpenseBloc(
       getExpensesUseCase: getIt(),
       addExpenseUseCase: getIt(),
       updateExpenseUseCase: getIt(),
       deleteExpenseUseCase: getIt(),
+      getExpensesByMonthUseCase: getIt(),
     ),
   );
 }

@@ -22,6 +22,7 @@ class AddExpenseEvent extends ExpenseEvent {
   final String category;
   final DateTime date;
   final TransactionType type;
+  final int fixedExpense;
 
   const AddExpenseEvent({
     required this.expenseOwner,
@@ -30,6 +31,7 @@ class AddExpenseEvent extends ExpenseEvent {
     required this.category,
     required this.date,
     required this.type,
+    required this.fixedExpense,
   });
 
   @override
@@ -40,6 +42,7 @@ class AddExpenseEvent extends ExpenseEvent {
     category,
     date,
     type,
+    fixedExpense,
   ];
 }
 
@@ -76,4 +79,48 @@ class FilterExpensesByCategoryEvent extends ExpenseEvent {
 /// Evento: Obtener el total de gastos
 class GetTotalExpensesEvent extends ExpenseEvent {
   const GetTotalExpensesEvent();
+}
+
+class GetExpensesByMonthEvent extends ExpenseEvent {
+  final DateTime time;
+
+  const GetExpensesByMonthEvent({required this.time});
+
+  @override
+  List<Object?> get props => [time];
+}
+
+/// Evento: Activar modo de selección múltiple
+class EnableSelectionModeEvent extends ExpenseEvent {
+  const EnableSelectionModeEvent();
+}
+
+/// Evento: Desactivar modo de selección múltiple
+class DisableSelectionModeEvent extends ExpenseEvent {
+  const DisableSelectionModeEvent();
+}
+
+/// Evento: Seleccionar/deseleccionar un gasto
+class ToggleExpenseSelectionEvent extends ExpenseEvent {
+  final String expenseId;
+
+  const ToggleExpenseSelectionEvent({required this.expenseId});
+
+  @override
+  List<Object?> get props => [expenseId];
+}
+
+/// Evento: Seleccionar todos los gastos
+class SelectAllExpensesEvent extends ExpenseEvent {
+  const SelectAllExpensesEvent();
+}
+
+/// Evento: Deseleccionar todos los gastos
+class DeselectAllExpensesEvent extends ExpenseEvent {
+  const DeselectAllExpensesEvent();
+}
+
+/// Evento: Eliminar gastos seleccionados
+class DeleteSelectedExpensesEvent extends ExpenseEvent {
+  const DeleteSelectedExpensesEvent();
 }

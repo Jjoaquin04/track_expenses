@@ -23,8 +23,9 @@ class ExpensesScreenState extends State<ExpensesScreen> {
   @override
   void initState() {
     super.initState();
-
-    context.read<ExpenseBloc>().add(const LoadExpensesEvent());
+    context.read<ExpenseBloc>().add(
+      GetExpensesByMonthEvent(time: DateTime.now()),
+    );
   }
 
   Future<void> saveExpense({
@@ -33,6 +34,7 @@ class ExpensesScreenState extends State<ExpensesScreen> {
     required String amount,
     required DateTime date,
     required TransactionType type,
+    required int fixedExpense,
   }) async {
     // Validar campos vacíos
     if (name.trim().isEmpty || category.isEmpty || amount.trim().isEmpty) {
@@ -59,6 +61,7 @@ class ExpensesScreenState extends State<ExpensesScreen> {
         category: category,
         date: date,
         type: type,
+        fixedExpense: fixedExpense,
       ),
     );
 
@@ -79,38 +82,54 @@ class ExpensesScreenState extends State<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.background,
-      appBar: const ExpenseAppBar(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SummaryCardsWidget(),
-          const SizedBox(height: 20),
-          Divider(
-            height: 2,
-            color: AppColor.secondary.withValues(alpha: 0.3),
-            indent: 10,
-            endIndent: 10,
+    return BlocBuilder<ExpenseBloc, ExpenseState>(
+      builder: (context, state) {
+        final isSelectionMode = state is ExpenseSelectionMode;
+        final selectedCount = isSelectionMode ? state.selectedIds.length : 0;
+
+        return Scaffold(
+          backgroundColor: AppColor.background,
+          appBar: const ExpenseAppBar(),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SummaryCardsWidget(),
+              const SizedBox(height: 20),
+              Divider(
+                height: 2,
+                color: AppColor.secondary.withValues(alpha: 0.3),
+                indent: 10,
+                endIndent: 10,
+              ),
+              Expanded(
+                child: BlocConsumer<ExpenseBloc, ExpenseState>(
+                  listener: _handleExpenseStateChanges,
+                  builder: _buildExpenseList,
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: BlocConsumer<ExpenseBloc, ExpenseState>(
-              listener: _handleExpenseStateChanges,
-              builder: _buildExpenseList,
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColor.background,
-        hoverElevation: 2.0,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppColor.primary, width: 2.5),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        onPressed: _showAddExpenseBottomSheet,
-        child: const Icon(Icons.add_rounded, color: AppColor.primary, size: 25),
-      ),
+          bottomNavigationBar: isSelectionMode
+              ? _buildSelectionBottomBar(selectedCount)
+              : null,
+          floatingActionButton: isSelectionMode
+              ? null
+              : FloatingActionButton(
+                  backgroundColor: AppColor.background,
+                  hoverElevation: 2.0,
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(color: AppColor.primary, width: 2.5),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  onPressed: _showAddExpenseBottomSheet,
+                  child: const Icon(
+                    Icons.add_rounded,
+                    color: AppColor.primary,
+                    size: 25,
+                  ),
+                ),
+        );
+      },
     );
   }
 
@@ -121,6 +140,10 @@ class ExpensesScreenState extends State<ExpensesScreen> {
       SnackBarHelper.showSuccess(context, 'Gasto actualizado correctamente');
     } else if (state is ExpenseDeleted) {
       SnackBarHelper.showSuccess(context, 'Gasto eliminado');
+      // Después de eliminar, recargar los gastos del mes actual
+      context.read<ExpenseBloc>().add(
+        GetExpensesByMonthEvent(time: DateTime.now()),
+      );
     } else if (state is ExpenseError) {
       SnackBarHelper.showError(context, 'Error: ${state.message}');
     }
@@ -140,8 +163,22 @@ class ExpensesScreenState extends State<ExpensesScreen> {
       );
     }
 
-    if (state is ExpenseLoaded) {
-      if (state.expenses.isEmpty) {
+    if (state is ExpenseLoaded || state is ExpenseSelectionMode) {
+      late final List<Expense> expenses;
+      late final Set<String> selectedIds;
+
+      if (state is ExpenseLoaded) {
+        expenses = state.expenses;
+        selectedIds = {};
+      } else {
+        final selectionState = state as ExpenseSelectionMode;
+        expenses = selectionState.expenses;
+        selectedIds = selectionState.selectedIds;
+      }
+
+      final isSelectionMode = state is ExpenseSelectionMode;
+
+      if (expenses.isEmpty) {
         return const Center(
           child: Text(
             "No hay movimientos registrados",
@@ -156,9 +193,28 @@ class ExpensesScreenState extends State<ExpensesScreen> {
 
       return ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        itemCount: state.expenses.length,
+        itemCount: expenses.length,
         itemBuilder: (context, index) {
-          return ExpenseListItem(expense: state.expenses[index]);
+          final expense = expenses[index];
+          final isSelected = selectedIds.contains(expense.id);
+
+          return ExpenseListItem(
+            expense: expense,
+            isSelectionMode: isSelectionMode,
+            isSelected: isSelected,
+            onLongPress: isSelectionMode
+                ? null
+                : () {
+                    context.read<ExpenseBloc>().add(EnableSelectionModeEvent());
+                  },
+            onTap: isSelectionMode
+                ? () {
+                    context.read<ExpenseBloc>().add(
+                      ToggleExpenseSelectionEvent(expenseId: expense.id!),
+                    );
+                  }
+                : null,
+          );
         },
       );
     }
@@ -172,6 +228,100 @@ class ExpensesScreenState extends State<ExpensesScreen> {
           color: Colors.grey,
         ),
       ),
+    );
+  }
+
+  Widget _buildSelectionBottomBar(int selectedCount) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        color: AppColor.background,
+        border: Border(
+          top: BorderSide(color: AppColor.secondary.withValues(alpha: 0.3)),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Botón cancelar
+          TextButton.icon(
+            onPressed: () {
+              context.read<ExpenseBloc>().add(DisableSelectionModeEvent());
+            },
+            icon: const Icon(Icons.close, color: Colors.grey),
+            label: const Text(
+              'Cancelar',
+              style: TextStyle(color: Colors.grey, fontFamily: 'SEGOE_UI'),
+            ),
+          ),
+          const Spacer(),
+          // Contador de seleccionados
+          Text(
+            '$selectedCount seleccionados',
+            style: const TextStyle(
+              fontFamily: 'SEGOE_UI',
+              fontWeight: FontWeight.bold,
+              color: AppColor.primary,
+            ),
+          ),
+          const Spacer(),
+          // Botón eliminar
+          if (selectedCount > 0)
+            TextButton.icon(
+              onPressed: () {
+                _showDeleteConfirmationDialog();
+              },
+              icon: const Icon(Icons.delete, color: Colors.red),
+              label: const Text(
+                'Eliminar',
+                style: TextStyle(color: Colors.red, fontFamily: 'SEGOE_UI'),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            side: BorderSide(color: AppColor.primary, width: 2.0),
+          ),
+          title: const Text(
+            'Confirmar eliminación',
+            style: TextStyle(
+              fontFamily: 'SEGOE_UI',
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+            '¿Estás seguro de que quieres eliminar los gastos seleccionados?',
+            style: TextStyle(fontFamily: 'SEGOE_UI'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(color: Colors.grey, fontFamily: 'SEGOE_UI'),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<ExpenseBloc>().add(DeleteSelectedExpensesEvent());
+              },
+              child: const Text(
+                'Eliminar',
+                style: TextStyle(color: Colors.red, fontFamily: 'SEGOE_UI'),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
