@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="expense_categories">
+        <item>Alimentación</item>
+        <item>Transporte</item>
+        <item>Vivienda</item>
+        <item>Servicios</item>
+        <item>Salud</item>
+        <item>Educación</item>
+        <item>Entretenimiento</item>
+        <item>Ropa y Calzado</item>
+        <item>Cuidado Personal</item>
+        <item>Otros Gastos</item>
+    </string-array>
+    <string-array name="income_categories">
+        <item>Salario</item>
+        <item>Salario Extra</item>
+        <item>Freelance</item>
+        <item>Negocio Propio</item>
+        <item>Inversiones</item>
+        <item>Alquileres</item>
+        <item>Ventas</item>
+        <item>Reembolsos</item>
+        <item>Regalos/Ayuda</item>
+        <item>Otros Ingresos</item>
+    </string-array>
+</resources>

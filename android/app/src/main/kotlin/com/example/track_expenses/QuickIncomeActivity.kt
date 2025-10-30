@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-
-// 1. IMPORTAR EL PLUGIN HOME_WIDGET
 import es.antonborri.home_widget.HomeWidgetPlugin
 
 class QuickIncomeActivity : Activity() {
@@ -60,7 +60,13 @@ class QuickIncomeActivity : Activity() {
         }
 
         val incomeId = UUID.randomUUID().toString()
-        val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+        val datePicker = findViewById<DatePicker>(R.id.date_picker)
+        val year = datePicker.year
+        val month = datePicker.month
+        val day = datePicker.dayOfMonth
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day)
+        val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(calendar.time)
         val fixedIncome = if (isFixed) 1 else 0
 
         // 2. CONSTRUIR UN STRING JSON CON LOS DATOS
@@ -85,7 +91,7 @@ class QuickIncomeActivity : Activity() {
                 .apply()
 
             // Esto despierta el 'backgroundCallback' en Dart
-            HomeWidgetPlugin.callUpdate(this) 
+            HomeWidgetPlugin.updateWidget(this)
 
             Toast.makeText(this, "Ingreso guardado", Toast.LENGTH_SHORT).show()
             

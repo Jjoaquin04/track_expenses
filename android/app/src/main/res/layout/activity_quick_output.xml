@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_name"
+                    android:id="@+id/expenseNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:color="@android:color/black"
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_amount"
+                    android:id="@+id/expenseAmountEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:color="@android:color/black"
@@ -109,7 +109,7 @@
                 android:layout_marginBottom="2dp" />
 
             <Spinner
-                android:id="@+id/spinner_category"
+                android:id="@+id/expenseCategorySpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -131,7 +131,7 @@
                 android:layout_marginBottom="2dp" />
 
             <CheckBox
-                android:id="@+id/checkbox_fixed"
+                android:id="@+id/fixedExpenseCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false" />
@@ -145,7 +145,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Fecha"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:color="@android:color/black" />
 
     <DatePicker
         android:id="@+id/date_picker"
@@ -157,7 +158,7 @@
 
     <!-- Botón Guardar -->
     <Button
-        android:id="@+id/btn_save"
+        android:id="@+id/saveExpenseButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Guardar"

@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_name"
+                    android:id="@+id/incomeNameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text" 
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_amount"
+                    android:id="@+id/incomeAmountEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:color="@android:color/black"
@@ -108,7 +108,7 @@
                 android:layout_marginBottom="2dp" />
 
             <Spinner
-                android:id="@+id/spinner_category"
+                android:id="@+id/incomeCategorySpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -130,7 +130,7 @@
                 android:layout_marginBottom="2dp" />
 
             <CheckBox
-                android:id="@+id/checkbox_fixed"
+                android:id="@+id/fixedIncomeCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false" />
@@ -157,7 +157,7 @@
 
     <!-- Botón Guardar -->
     <Button
-        android:id="@+id/btn_save"
+        android:id="@+id/saveIncomeButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Guardar"

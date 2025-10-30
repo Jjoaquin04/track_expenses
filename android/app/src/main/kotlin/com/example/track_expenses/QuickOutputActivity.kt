@@ -84,7 +84,7 @@ class QuickOutputActivity : Activity() {
                 .apply()
 
             // Esto despierta el 'backgroundCallback' en Dart
-            HomeWidgetPlugin.callUpdate(this)
+            HomeWidgetPlugin.updateWidget(this)
 
             Toast.makeText(this, "Gasto guardado", Toast.LENGTH_SHORT).show()
 

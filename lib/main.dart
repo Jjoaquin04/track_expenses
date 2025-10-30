@@ -44,7 +44,8 @@ void backgroundCallback(Uri? uri) async {
       // 4. Parsear el JSON
       final data = jsonDecode(dataString) as Map<String, dynamic>;
 
-      final amount = data['amount'] as num?;
+      final amountStr = data['amount'] as String?;
+      final amount = amountStr != null ? double.tryParse(amountStr) : null;
       final dateStr = data['date'] as String?;
       final date = (dateStr != null) ? DateTime.tryParse(dateStr) : null;
       final typeStr = data['type'] as String?;
@@ -65,7 +66,7 @@ void backgroundCallback(Uri? uri) async {
       final model = ExpenseModel(
         expenseOwner: expenseOwner,
         expenseName: data['name'] as String? ?? '',
-        amount: amount.toDouble(),
+        amount: amount,
         category: data['category'] as String? ?? 'Otros',
         date: date,
         type: typeStr == "expense" ? 0 : 1,
