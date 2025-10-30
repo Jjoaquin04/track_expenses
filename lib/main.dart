@@ -14,7 +14,6 @@ import 'package:track_expenses/featured/expenses/presentation/pages/welcome_scre
 /// Callback de fondo para HomeWidget
 @pragma('vm:entry-point')
 void backgroundCallback(Uri? uri) async {
-  print('HomeWidget: backgroundCallback called with uri: $uri');
   // Comprobar si es una actualización de datos
   if (uri?.host == 'update') {
     print('HomeWidget: Callback de fondo recibido.');
