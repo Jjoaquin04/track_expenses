@@ -17,8 +17,8 @@ dependencies:
   flutter_bloc: ^8.1.6
   get_it: ^8.2.0
   shared_preferences: ^2.5.3
-  workmanager: ^0.9.0+3
-
+  home_widget: ^0.8.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,116 +1,101 @@
 package com.example.track_expenses
 
-import android.content.Intent
-import android.content.SharedPreferences
+import android.app.Activity
 import android.os.Bundle
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import java.text.SimpleDateFormat
-import java.util.*
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import dev.fluttercommunity.workmanager.BackgroundWorker
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 
-class QuickOutputActivity : AppCompatActivity() {
+// 1. IMPORTAR EL PLUGIN HOME_WIDGET
+import es.antonborri.home_widget.HomeWidgetPlugin
 
-    private lateinit var etName: EditText
-    private lateinit var etAmount: EditText
-    private lateinit var spinnerCategory: Spinner
-    private lateinit var datePicker: DatePicker
-    private lateinit var checkboxFixed: CheckBox
-    private lateinit var btnSave: Button
-
-    private val categories = arrayOf(
-        "Alimentación",
-        "Transporte",
-        "Vivienda",
-        "Servicios",
-        "Salud",
-        "Educación",
-        "Entretenimiento",
-        "Ropa y Calzado",
-        "Cuidado Personal",
-        "Otros Gastos"
-    )
+class QuickOutputActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quick_output)
 
-        // Inicializar vistas
-        etName = findViewById(R.id.et_name)
-        etAmount = findViewById(R.id.et_amount)
-        spinnerCategory = findViewById(R.id.spinner_category)
-        datePicker = findViewById(R.id.date_picker)
-        checkboxFixed = findViewById(R.id.checkbox_fixed)
-        btnSave = findViewById(R.id.btn_save)
+        val nameEditText: EditText = findViewById(R.id.expenseNameEditText)
+        val amountEditText: EditText = findViewById(R.id.expenseAmountEditText)
+        val categorySpinner: Spinner = findViewById(R.id.expenseCategorySpinner)
+        val fixedExpenseCheckBox: CheckBox = findViewById(R.id.fixedExpenseCheckBox)
+        val saveButton: Button = findViewById(R.id.saveExpenseButton)
 
-        // Configurar spinner
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCategory.adapter = adapter
+        // Configurar Spinner
+        ArrayAdapter.createFromResource(
+            this,
+            R.array.expense_categories,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            categorySpinner.adapter = adapter
+        }
 
-        // Configurar botón guardar
-        btnSave.setOnClickListener { saveExpense() }
+        saveButton.setOnClickListener {
+            saveExpense(
+                nameEditText.text.toString(),
+                amountEditText.text.toString(),
+                categorySpinner.selectedItem.toString(),
+                fixedExpenseCheckBox.isChecked
+            )
+        }
     }
 
-    private fun saveExpense() {
-
-        val name = etName.text.toString().trim()
-        val amountText = etAmount.text.toString().trim()
-        val category = spinnerCategory.selectedItem.toString()
-        val isFixed = checkboxFixed.isChecked
-
-        // Validación
-        if (name.isEmpty()) {
-            etName.error = "El nombre es requerido"
+    private fun saveExpense(
+        name: String,
+        amount: String,
+        category: String,
+        isFixed: Boolean
+    ) {
+        if (name.isBlank() || amount.isBlank()) {
+            Toast.makeText(this, "Nombre y cantidad son obligatorios", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (amountText.isEmpty()) {
-            etAmount.error = "El monto es requerido"
-            return
-        }
-
-        val amount = amountText.toDoubleOrNull()
-        if (amount == null || amount <= 0) {
-            etAmount.error = "Ingrese un monto válido"
-            return
-        }
-
-        // Obtener fecha del DatePicker
-        val year = datePicker.year
-        val month = datePicker.month
-        val day = datePicker.dayOfMonth
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month, day)
-        val selectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(calendar.time)
-
-        // Guardar en SharedPreferences (para que Flutter lo lea)
-        val prefs: SharedPreferences = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
-        val editor = prefs.edit()
-
-        // Crear ID único para el gasto
         val expenseId = UUID.randomUUID().toString()
+        val date = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+        val fixedExpense = if (isFixed) 1 else 0
 
-        // Guardar datos del gasto
-        editor.putString("${expenseId}_name", name)
-        editor.putString("${expenseId}_amount", amount.toString())
-        editor.putString("${expenseId}_category", category)
-        editor.putString("${expenseId}_date", selectedDate)
-        editor.putString("${expenseId}_type", "expense")
-        editor.putString("${expenseId}_fixedExpense", if (isFixed) "1" else "0")
-        editor.apply()
+        // 2. CONSTRUIR UN STRING JSON CON LOS DATOS
+        // Nota: "type": "expense"
+        val jsonString = """
+            {
+                "transactionId": "$expenseId",
+                "name": "$name",
+                "amount": "$amount",
+                "category": "$category",
+                "date": "$date",
+                "type": "expense",
+                "fixedExpense": $fixedExpense
+            }
+        """.trimIndent()
 
-        val inputData = Data.Builder().putString("transactionId",expenseId).build()
+        // 3. USAR HOME_WIDGET PARA GUARDAR LOS DATOS Y LLAMAR AL CALLBACK
+         try {
+            HomeWidgetPlugin.getData(this).edit()
+                .putString("expense_data", jsonString)
+                .apply()
 
-        val saveRequest = OneTimeWorkRequest.Builder(BackgroundWorker::class.java).setInputData(inputData).build()
+            // Esto despierta el 'backgroundCallback' en Dart
+            HomeWidgetPlugin.callUpdate(this)
 
-        WorkManager.getInstance(this).enqueue(saveRequest)
+            Toast.makeText(this, "Gasto guardado", Toast.LENGTH_SHORT).show()
 
-        // Mostrar mensaje y cerrar
-        Toast.makeText(this, "Gasto guardado correctamente", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
+            e.printStackTrace()
+        }
+        
+        // 4. ELIMINAMOS TODA LA LÓGICA DE SHARED PREFERENCES Y WORKMANAGER
+
+        // Terminar la actividad
         finish()
     }
 }

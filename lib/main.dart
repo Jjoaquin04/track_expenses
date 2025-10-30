@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:track_expenses/core/constant/hive_constants.dart';
 import 'package:track_expenses/core/dependency_injection/dependecy_injection.dart';
 import 'package:track_expenses/core/utils/user_config.dart';
@@ -9,129 +10,102 @@ import 'package:track_expenses/featured/expenses/data/expense_model.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/pages/expenses_screen.dart';
 import 'package:track_expenses/featured/expenses/presentation/pages/welcome_screen.dart';
-import 'package:workmanager/workmanager.dart';
 
+/// Callback de fondo para HomeWidget
 @pragma('vm:entry-point')
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    final transactionId = inputData?["transactionId"];
-    print('Workmanager: Task received with transactionId: $transactionId');
-    if (transactionId == null) {
-      return Future.value(false);
-    }
+void backgroundCallback(Uri? uri) async {
+  // Comprobar si es una actualización de datos
+  if (uri?.host == 'update') {
+    print('HomeWidget: Callback de fondo recibido.');
     try {
-      // CORRECCIÓN 1 (Crítica): Inicializar el binding para plugins nativos en el Isolate.
-      // Esta línea es la que soluciona el 'FAILURE'.
+      // 1. Inicializar todo lo necesario en el Isolate de fondo
       WidgetsFlutterBinding.ensureInitialized();
+      await Hive.initFlutter();
+      if (!Hive.isAdapterRegistered(ExpenseModelAdapter().typeId)) {
+        Hive.registerAdapter(ExpenseModelAdapter());
+      }
 
-      final prefs = await SharedPreferences.getInstance();
+      // 2. Abrir las cajas de Hive
+      final expenseBox = await Hive.openBox<ExpenseModel>(
+        HiveConstants.expenseBox,
+      );
+      final userConfigBox = await Hive.openBox('user_config');
 
-      final amountStr = prefs.getString("${transactionId}_amount");
-      final category = prefs.getString("${transactionId}_category");
-      final type = prefs.getString("${transactionId}_type");
-      final dateStr = prefs.getString("${transactionId}_date");
-      final name = prefs.getString("${transactionId}_name");
-      final fixedExpenseStr = prefs.getString("${transactionId}_fixedExpense");
-      final fixedExpense = int.tryParse(fixedExpenseStr ?? '0') ?? 0;
+      // 3. Obtener los datos (string JSON) guardados desde Kotlin
+      final dataString = await HomeWidget.getWidgetData<String>('expense_data');
 
-      print('Workmanager: Data from SharedPreferences:');
-      print(
-        'Workmanager: amount: $amountStr, category: $category, type: $type, date: $dateStr, name: $name, fixedExpense: $fixedExpenseStr',
+      if (dataString == null) {
+        print('HomeWidget: No se encontraron datos para procesar.');
+        return;
+      }
+
+      print('HomeWidget: Datos recibidos: $dataString');
+
+      // 4. Parsear el JSON
+      final data = jsonDecode(dataString) as Map<String, dynamic>;
+
+      final amount = data['amount'] as num?;
+      final dateStr = data['date'] as String?;
+      final date = (dateStr != null) ? DateTime.tryParse(dateStr) : null;
+      final typeStr = data['type'] as String?;
+      final fixedExpense = data['fixedExpense'] as int?;
+
+      if (amount == null || date == null || typeStr == null) {
+        print('HomeWidget: Datos inválidos (amount, date o type es nulo).');
+        return;
+      }
+
+      // 5. Obtener el dueño del gasto
+      final expenseOwner = userConfigBox.get(
+        'user_name',
+        defaultValue: 'Usuario',
       );
 
-      if (amountStr != null &&
-          type != null &&
-          category != null &&
-          dateStr != null &&
-          name != null) {
-        final amount = double.tryParse(amountStr);
-        final date = DateTime.tryParse(dateStr);
-        if (amount == null || date == null) {
-          print('Workmanager: Failed to parse amount or date.');
-          return Future.value(false);
-        }
+      // 6. Crear el modelo
+      final model = ExpenseModel(
+        expenseOwner: expenseOwner,
+        expenseName: data['name'] as String? ?? '',
+        amount: amount.toDouble(),
+        category: data['category'] as String? ?? 'Otros',
+        date: date,
+        type: typeStr == "expense" ? 0 : 1,
+        fixedExpense: fixedExpense ?? 0,
+      );
 
-        // Inicializar Hive en el isolate (thread-safe)
-        await Hive.initFlutter();
+      // 7. Guardar en Hive
+      await expenseBox.add(model);
+      print('HomeWidget: Gasto guardado en Hive: ${model.expenseName}');
 
-        // CORRECCIÓN 2 (Mejora): Comprobar si el adaptador ya está registrado.
-        // Evita errores si la tarea se ejecuta varias veces.
-        if (!Hive.isAdapterRegistered(ExpenseModelAdapter().typeId)) {
-          Hive.registerAdapter(ExpenseModelAdapter());
-        }
+      // 8. Cerrar cajas en el Isolate de fondo
+      await expenseBox.close();
+      await userConfigBox.close();
 
-        // Abrir las cajas necesarias
-        final expenseBox = await Hive.openBox<ExpenseModel>(
-          HiveConstants.expenseBox,
-        );
-        // NOTA: Abrir 'user_config' aquí puede ser arriesgado si la app principal
-        // también la tiene abierta. Pero si 'user_name' no cambia,
-        // leerlo una vez está bien.
-        final userConfigBox = await Hive.openBox('user_config');
-
-        // Obtener el nombre del usuario desde la caja de configuración
-        final expenseOwner = userConfigBox.get(
-          'user_name',
-          defaultValue: 'Usuario',
-        );
-
-        final model = ExpenseModel(
-          expenseOwner: expenseOwner,
-          expenseName: name,
-          amount: amount,
-          category: category,
-          date: date,
-          type: type == "expense" ? 0 : 1,
-          fixedExpense: fixedExpense,
-        );
-
-        await expenseBox.add(model);
-        print('Workmanager: Expense saved to Hive.');
-
-        await expenseBox.close();
-        await userConfigBox.close();
-
-        // Limpiar los datos temporales de SharedPreferences
-        await prefs.remove("${transactionId}_name");
-        await prefs.remove("${transactionId}_amount");
-        await prefs.remove("${transactionId}_category");
-        await prefs.remove("${transactionId}_date");
-        await prefs.remove("${transactionId}_type");
-        await prefs.remove("${transactionId}_fixedExpense");
-        print('Workmanager: Cleaned up SharedPreferences.');
-
-        return Future.value(true);
-      } else {
-        print(
-          'Workmanager: One or more values were null in SharedPreferences.',
-        );
-        return Future.value(false);
-      }
+      // 9. (IMPORTANTE) Limpiar los datos para que no se procesen de nuevo
+      await HomeWidget.saveWidgetData<String>('expense_data', null);
+      print('HomeWidget: Datos de HomeWidget limpiados.');
     } catch (e, s) {
-      // Añadido 's' para ver el StackTrace
-      print('Workmanager: Error executing task: $e');
-      print(s); // Imprime la pila de llamadas para más detalles
-      return Future.value(false);
+      print('HomeWidget: Error en backgroundCallback: $e');
+      print(s);
     }
-  });
+  }
 }
 
 void main() async {
-  // CORRECCIÓN 3: Esta línea DEBE ser la primera en main().
+  // 1. Inicialización estándar
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive
+  // 2. Registrar el callback de HomeWidget (en lugar de Workmanager)
+  HomeWidget.registerBackgroundCallback(backgroundCallback);
+
+  // 3. Inicialización de Hive para la app principal
   await Hive.initFlutter();
-
-  // Registramos el adaptor del file generado automaticamente
   Hive.registerAdapter(ExpenseModelAdapter());
-
   await Hive.openBox<ExpenseModel>(HiveConstants.expenseBox);
+  // También abrimos user_config para la app principal
+  await Hive.openBox('user_config');
 
+  // 4. Inyección de dependencias y ejecutar la app
   setUpDependencyInjection();
-
-  Workmanager().initialize(callbackDispatcher);
-
   runApp(const MainApp());
 }
 
@@ -152,11 +126,9 @@ class MainApp extends StatelessWidget {
                 body: Center(child: CircularProgressIndicator()),
               );
             }
-
             if (snapshot.data == true) {
               return const ExpensesScreen();
             }
-
             return const WelcomeScreen();
           },
         ),
