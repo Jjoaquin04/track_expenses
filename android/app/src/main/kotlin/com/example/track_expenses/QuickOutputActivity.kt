@@ -10,6 +10,7 @@ import java.util.*
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import dev.fluttercommunity.workmanager.BackgroundWorker
 
 class QuickOutputActivity : AppCompatActivity() {
 
@@ -103,8 +104,8 @@ class QuickOutputActivity : AppCompatActivity() {
         editor.apply()
 
         val inputData = Data.Builder().putString("transactionId",expenseId).build()
-        
-        val saveRequest = OneTimeWorkRequest.Builder(SaveTransactionWorker::class.java).setInputData(inputData).build()
+
+        val saveRequest = OneTimeWorkRequest.Builder(BackgroundWorker::class.java).setInputData(inputData).build()
 
         WorkManager.getInstance(this).enqueue(saveRequest)
 

@@ -61,6 +61,9 @@
                     android:name="android.appwidget.provider"
                     android:resource="@xml/input_widget_info"/>
             </receiver>
+        <service
+            android:name="dev.fluttercommunity.workmanager.WorkManagerTask"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

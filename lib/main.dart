@@ -20,6 +20,10 @@ void callbackDispatcher() {
       return Future.value(false);
     }
     try {
+      // CORRECCIÓN 1 (Crítica): Inicializar el binding para plugins nativos en el Isolate.
+      // Esta línea es la que soluciona el 'FAILURE'.
+      WidgetsFlutterBinding.ensureInitialized();
+
       final prefs = await SharedPreferences.getInstance();
 
       final amountStr = prefs.getString("${transactionId}_amount");
@@ -49,12 +53,20 @@ void callbackDispatcher() {
 
         // Inicializar Hive en el isolate (thread-safe)
         await Hive.initFlutter();
-        Hive.registerAdapter(ExpenseModelAdapter());
+
+        // CORRECCIÓN 2 (Mejora): Comprobar si el adaptador ya está registrado.
+        // Evita errores si la tarea se ejecuta varias veces.
+        if (!Hive.isAdapterRegistered(ExpenseModelAdapter().typeId)) {
+          Hive.registerAdapter(ExpenseModelAdapter());
+        }
 
         // Abrir las cajas necesarias
         final expenseBox = await Hive.openBox<ExpenseModel>(
           HiveConstants.expenseBox,
         );
+        // NOTA: Abrir 'user_config' aquí puede ser arriesgado si la app principal
+        // también la tiene abierta. Pero si 'user_name' no cambia,
+        // leerlo una vez está bien.
         final userConfigBox = await Hive.openBox('user_config');
 
         // Obtener el nombre del usuario desde la caja de configuración
@@ -76,7 +88,6 @@ void callbackDispatcher() {
         await expenseBox.add(model);
         print('Workmanager: Expense saved to Hive.');
 
-        // Cerrar las cajas para evitar conflictos (Isolate seguro)
         await expenseBox.close();
         await userConfigBox.close();
 
@@ -96,14 +107,19 @@ void callbackDispatcher() {
         );
         return Future.value(false);
       }
-    } catch (e) {
+    } catch (e, s) {
+      // Añadido 's' para ver el StackTrace
       print('Workmanager: Error executing task: $e');
+      print(s); // Imprime la pila de llamadas para más detalles
       return Future.value(false);
     }
   });
 }
 
 void main() async {
+  // CORRECCIÓN 3: Esta línea DEBE ser la primera en main().
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Initialize Hive
   await Hive.initFlutter();
 
@@ -114,7 +130,6 @@ void main() async {
 
   setUpDependencyInjection();
 
-  WidgetsFlutterBinding.ensureInitialized();
   Workmanager().initialize(callbackDispatcher);
 
   runApp(const MainApp());
