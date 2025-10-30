@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:track_expenses/core/constant/hive_constants.dart';
 import 'package:track_expenses/core/dependency_injection/dependecy_injection.dart';
 import 'package:track_expenses/core/utils/user_config.dart';
@@ -8,6 +9,99 @@ import 'package:track_expenses/featured/expenses/data/expense_model.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/pages/expenses_screen.dart';
 import 'package:track_expenses/featured/expenses/presentation/pages/welcome_screen.dart';
+import 'package:workmanager/workmanager.dart';
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    final transactionId = inputData?["transactionId"];
+    print('Workmanager: Task received with transactionId: $transactionId');
+    if (transactionId == null) {
+      return Future.value(false);
+    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final amountStr = prefs.getString("${transactionId}_amount");
+      final category = prefs.getString("${transactionId}_category");
+      final type = prefs.getString("${transactionId}_type");
+      final dateStr = prefs.getString("${transactionId}_date");
+      final name = prefs.getString("${transactionId}_name");
+      final fixedExpenseStr = prefs.getString("${transactionId}_fixedExpense");
+      final fixedExpense = int.tryParse(fixedExpenseStr ?? '0') ?? 0;
+
+      print('Workmanager: Data from SharedPreferences:');
+      print(
+        'Workmanager: amount: $amountStr, category: $category, type: $type, date: $dateStr, name: $name, fixedExpense: $fixedExpenseStr',
+      );
+
+      if (amountStr != null &&
+          type != null &&
+          category != null &&
+          dateStr != null &&
+          name != null) {
+        final amount = double.tryParse(amountStr);
+        final date = DateTime.tryParse(dateStr);
+        if (amount == null || date == null) {
+          print('Workmanager: Failed to parse amount or date.');
+          return Future.value(false);
+        }
+
+        // Inicializar Hive en el isolate (thread-safe)
+        await Hive.initFlutter();
+        Hive.registerAdapter(ExpenseModelAdapter());
+
+        // Abrir las cajas necesarias
+        final expenseBox = await Hive.openBox<ExpenseModel>(
+          HiveConstants.expenseBox,
+        );
+        final userConfigBox = await Hive.openBox('user_config');
+
+        // Obtener el nombre del usuario desde la caja de configuración
+        final expenseOwner = userConfigBox.get(
+          'user_name',
+          defaultValue: 'Usuario',
+        );
+
+        final model = ExpenseModel(
+          expenseOwner: expenseOwner,
+          expenseName: name,
+          amount: amount,
+          category: category,
+          date: date,
+          type: type == "expense" ? 0 : 1,
+          fixedExpense: fixedExpense,
+        );
+
+        await expenseBox.add(model);
+        print('Workmanager: Expense saved to Hive.');
+
+        // Cerrar las cajas para evitar conflictos (Isolate seguro)
+        await expenseBox.close();
+        await userConfigBox.close();
+
+        // Limpiar los datos temporales de SharedPreferences
+        await prefs.remove("${transactionId}_name");
+        await prefs.remove("${transactionId}_amount");
+        await prefs.remove("${transactionId}_category");
+        await prefs.remove("${transactionId}_date");
+        await prefs.remove("${transactionId}_type");
+        await prefs.remove("${transactionId}_fixedExpense");
+        print('Workmanager: Cleaned up SharedPreferences.');
+
+        return Future.value(true);
+      } else {
+        print(
+          'Workmanager: One or more values were null in SharedPreferences.',
+        );
+        return Future.value(false);
+      }
+    } catch (e) {
+      print('Workmanager: Error executing task: $e');
+      return Future.value(false);
+    }
+  });
+}
 
 void main() async {
   // Initialize Hive
@@ -19,6 +113,9 @@ void main() async {
   await Hive.openBox<ExpenseModel>(HiveConstants.expenseBox);
 
   setUpDependencyInjection();
+
+  WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(callbackDispatcher);
 
   runApp(const MainApp());
 }

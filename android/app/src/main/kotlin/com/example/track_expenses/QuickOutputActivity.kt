@@ -7,6 +7,9 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 
 class QuickOutputActivity : AppCompatActivity() {
 
@@ -14,6 +17,7 @@ class QuickOutputActivity : AppCompatActivity() {
     private lateinit var etAmount: EditText
     private lateinit var spinnerCategory: Spinner
     private lateinit var datePicker: DatePicker
+    private lateinit var checkboxFixed: CheckBox
     private lateinit var btnSave: Button
 
     private val categories = arrayOf(
@@ -38,6 +42,7 @@ class QuickOutputActivity : AppCompatActivity() {
         etAmount = findViewById(R.id.et_amount)
         spinnerCategory = findViewById(R.id.spinner_category)
         datePicker = findViewById(R.id.date_picker)
+        checkboxFixed = findViewById(R.id.checkbox_fixed)
         btnSave = findViewById(R.id.btn_save)
 
         // Configurar spinner
@@ -50,9 +55,11 @@ class QuickOutputActivity : AppCompatActivity() {
     }
 
     private fun saveExpense() {
+
         val name = etName.text.toString().trim()
         val amountText = etAmount.text.toString().trim()
         val category = spinnerCategory.selectedItem.toString()
+        val isFixed = checkboxFixed.isChecked
 
         // Validación
         if (name.isEmpty()) {
@@ -87,16 +94,19 @@ class QuickOutputActivity : AppCompatActivity() {
         val expenseId = UUID.randomUUID().toString()
 
         // Guardar datos del gasto
-        editor.putString("expense_${expenseId}_name", name)
-        editor.putString("expense_${expenseId}_amount", amount.toString())
-        editor.putString("expense_${expenseId}_category", category)
-        editor.putString("expense_${expenseId}_date", selectedDate)
-        editor.putString("expense_${expenseId}_type", "expense") // o "income"
+        editor.putString("${expenseId}_name", name)
+        editor.putString("${expenseId}_amount", amount.toString())
+        editor.putString("${expenseId}_category", category)
+        editor.putString("${expenseId}_date", selectedDate)
+        editor.putString("${expenseId}_type", "expense")
+        editor.putString("${expenseId}_fixedExpense", if (isFixed) "1" else "0")
         editor.apply()
 
-        // Notificar a Flutter (opcional - puedes usar un BroadcastReceiver)
-        val intent = Intent("com.example.track_expenses.EXPENSE_ADDED")
-        sendBroadcast(intent)
+        val inputData = Data.Builder().putString("transactionId",expenseId).build()
+        
+        val saveRequest = OneTimeWorkRequest.Builder(SaveTransactionWorker::class.java).setInputData(inputData).build()
+
+        WorkManager.getInstance(this).enqueue(saveRequest)
 
         // Mostrar mensaje y cerrar
         Toast.makeText(this, "Gasto guardado correctamente", Toast.LENGTH_SHORT).show()

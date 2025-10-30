@@ -7,6 +7,10 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+
 
 class QuickIncomeActivity : AppCompatActivity() {
 
@@ -14,6 +18,7 @@ class QuickIncomeActivity : AppCompatActivity() {
     private lateinit var etAmount: EditText
     private lateinit var spinnerCategory: Spinner
     private lateinit var datePicker: DatePicker
+    private lateinit var checkboxFixed: CheckBox
     private lateinit var btnSave: Button
 
     private val categories = arrayOf(
@@ -38,6 +43,7 @@ class QuickIncomeActivity : AppCompatActivity() {
         etAmount = findViewById(R.id.et_amount)
         spinnerCategory = findViewById(R.id.spinner_category)
         datePicker = findViewById(R.id.date_picker)
+        checkboxFixed = findViewById(R.id.checkbox_fixed)
         btnSave = findViewById(R.id.btn_save)
 
         // Configurar spinner
@@ -53,6 +59,7 @@ class QuickIncomeActivity : AppCompatActivity() {
         val name = etName.text.toString().trim()
         val amountText = etAmount.text.toString().trim()
         val category = spinnerCategory.selectedItem.toString()
+        val isFixed = checkboxFixed.isChecked
 
         // Validación
         if (name.isEmpty()) {
@@ -87,16 +94,18 @@ class QuickIncomeActivity : AppCompatActivity() {
         val incomeId = UUID.randomUUID().toString()
 
         // Guardar datos del ingreso
-        editor.putString("income_${incomeId}_name", name)
-        editor.putString("income_${incomeId}_amount", amount.toString())
-        editor.putString("income_${incomeId}_category", category)
-        editor.putString("income_${incomeId}_date", selectedDate)
-        editor.putString("income_${incomeId}_type", "income")
+        editor.putString("${incomeId}_name", name)
+        editor.putString("${incomeId}_amount", amount.toString())
+        editor.putString("${incomeId}_category", category)
+        editor.putString("${incomeId}_date", selectedDate)
+        editor.putString("${incomeId}_type", "income")
         editor.apply()
+        
+        val inputData = Data.Builder().putString("transactionId",incomeId).build()
+        
+        val saveRequest = OneTimeWorkRequest.Builder(SaveTransactionWorker::class.java).setInputData(inputData).build()
 
-        // Notificar a Flutter (opcional - puedes usar un BroadcastReceiver)
-        val intent = Intent("com.example.track_expenses.INCOME_ADDED")
-        sendBroadcast(intent)
+        WorkManager.getInstance(this).enqueue(saveRequest)
 
         // Mostrar mensaje y cerrar
         Toast.makeText(this, "Ingreso guardado correctamente", Toast.LENGTH_SHORT).show()

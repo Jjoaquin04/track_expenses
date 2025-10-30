@@ -179,43 +179,61 @@ class ExpensesScreenState extends State<ExpensesScreen> {
       final isSelectionMode = state is ExpenseSelectionMode;
 
       if (expenses.isEmpty) {
-        return const Center(
-          child: Text(
-            "No hay movimientos registrados",
-            style: TextStyle(
-              fontFamily: "SEGOE_UI",
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<ExpenseBloc>().add(
+                  GetExpensesByMonthEvent(time: DateTime.now()),
+                );
+          },
+          child: ListView(
+            children: const [
+              Center(
+                child: Text(
+                  "No hay movimientos registrados",
+                  style: TextStyle(
+                    fontFamily: "SEGOE_UI",
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       }
 
-      return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        itemCount: expenses.length,
-        itemBuilder: (context, index) {
-          final expense = expenses[index];
-          final isSelected = selectedIds.contains(expense.id);
-
-          return ExpenseListItem(
-            expense: expense,
-            isSelectionMode: isSelectionMode,
-            isSelected: isSelected,
-            onLongPress: isSelectionMode
-                ? null
-                : () {
-                    context.read<ExpenseBloc>().add(EnableSelectionModeEvent());
-                  },
-            onTap: isSelectionMode
-                ? () {
-                    context.read<ExpenseBloc>().add(
-                      ToggleExpenseSelectionEvent(expenseId: expense.id!),
-                    );
-                  }
-                : null,
-          );
+      return RefreshIndicator(
+        onRefresh: () async {
+          context.read<ExpenseBloc>().add(
+                GetExpensesByMonthEvent(time: DateTime.now()),
+              );
         },
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          itemCount: expenses.length,
+          itemBuilder: (context, index) {
+            final expense = expenses[index];
+            final isSelected = selectedIds.contains(expense.id);
+
+            return ExpenseListItem(
+              expense: expense,
+              isSelectionMode: isSelectionMode,
+              isSelected: isSelected,
+              onLongPress: isSelectionMode
+                  ? null
+                  : () {
+                      context.read<ExpenseBloc>().add(EnableSelectionModeEvent());
+                    },
+              onTap: isSelectionMode
+                  ? () {
+                      context.read<ExpenseBloc>().add(
+                        ToggleExpenseSelectionEvent(expenseId: expense.id!),
+                      );
+                    }
+                  : null,
+            );
+          },
+        ),
       );
     }
 
