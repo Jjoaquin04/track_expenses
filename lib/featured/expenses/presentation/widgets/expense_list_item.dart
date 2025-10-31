@@ -28,7 +28,6 @@ class ExpenseListItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Checkbox para modo selección
             if (isSelectionMode) ...[
               Checkbox(
                 value: isSelected,
@@ -39,7 +38,6 @@ class ExpenseListItem extends StatelessWidget {
               ),
               const SizedBox(width: 12),
             ],
-            // Columna izquierda: Fecha y Categoría
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,

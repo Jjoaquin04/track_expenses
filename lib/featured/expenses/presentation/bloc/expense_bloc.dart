@@ -1,5 +1,9 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:track_expenses/core/constant/hive_constants.dart';
 import 'package:track_expenses/core/usecases/usecase.dart';
+import 'package:track_expenses/featured/expenses/data/expense_model.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/add_expense.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/delete_expense.dart';
 import 'package:track_expenses/featured/expenses/domain/usecases/get_expenses.dart';
@@ -14,6 +18,9 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   final UpdateExpense updateExpenseUseCase;
   final DeleteExpense deleteExpenseUseCase;
   final GetExpensesByMonth getExpensesByMonthUseCase;
+
+  StreamSubscription? _streamSubscription;
+  DateTime _currentDate = DateTime.now();
 
   ExpenseBloc({
     required this.getExpensesUseCase,
@@ -34,6 +41,18 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<SelectAllExpensesEvent>(_onSelectAllExpenses);
     on<DeselectAllExpensesEvent>(_onDeselectAllExpenses);
     on<DeleteSelectedExpensesEvent>(_onDeleteSelectedExpenses);
+
+    _listenBoxChanges();
+  }
+
+  void _listenBoxChanges() {
+    final Box<ExpenseModel> box = Hive.box<ExpenseModel>(
+      HiveConstants.expenseBox,
+    );
+
+    _streamSubscription = box.watch().listen((event) {
+      add(GetExpensesByMonthEvent(time: _currentDate));
+    });
   }
 
   /// Cargar todos los gastos
@@ -123,6 +142,8 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     Emitter<ExpenseState> emit,
   ) async {
     emit(const ExpenseLoading());
+
+    _currentDate = event.time;
 
     final result = await getExpensesByMonthUseCase(
       ExpensesByMonthParams(time: event.time),
@@ -234,5 +255,11 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       // Recargar gastos del mes actual
       add(GetExpensesByMonthEvent(time: DateTime.now()));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _streamSubscription?.cancel();
+    return super.close();
   }
 }

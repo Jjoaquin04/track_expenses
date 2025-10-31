@@ -15,6 +15,11 @@ import java.util.UUID
 
 // 1. IMPORTAR EL PLUGIN HOME_WIDGET
 import es.antonborri.home_widget.HomeWidgetPlugin
+// IMPORTS AÑADIDOS
+import android.content.Intent
+import android.net.Uri
+import es.antonborri.home_widget.HomeWidgetBackgroundReceiver
+
 
 class QuickOutputActivity : Activity() {
 
@@ -83,8 +88,14 @@ class QuickOutputActivity : Activity() {
                 .putString("expense_data", jsonString)
                 .apply()
 
-            // Esto despierta el 'backgroundCallback' en Dart
-            HomeWidgetPlugin.updateWidget(this)
+            // MODIFICADO: Esto despierta el 'backgroundCallback' en Dart
+            // Creamos un Intent para el HomeWidgetBackgroundReceiver
+            val intent = Intent(this, HomeWidgetBackgroundReceiver::class.java).apply {
+                action = "es.antonborri.home_widget.action.BACKGROUND"
+                // Este URI será recibido por el callback de Dart para que sepa qué hacer
+                data = Uri.parse("homewidget://update")
+            }
+            sendBroadcast(intent)
 
             Toast.makeText(this, "Gasto guardado", Toast.LENGTH_SHORT).show()
 

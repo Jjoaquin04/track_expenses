@@ -180,20 +180,24 @@ class ExpensesScreenState extends State<ExpensesScreen> {
 
       if (expenses.isEmpty) {
         return RefreshIndicator(
+          color: AppColor.primary,
           onRefresh: () async {
             context.read<ExpenseBloc>().add(
-                  GetExpensesByMonthEvent(time: DateTime.now()),
-                );
+              GetExpensesByMonthEvent(time: DateTime.now()),
+            );
           },
           child: ListView(
             children: const [
-              Center(
-                child: Text(
-                  "No hay movimientos registrados",
-                  style: TextStyle(
-                    fontFamily: "SEGOE_UI",
-                    fontSize: 16,
-                    color: Colors.grey,
+              Padding(
+                padding: EdgeInsets.only(top: 20.0),
+                child: Center(
+                  child: Text(
+                    "No hay movimientos registrados",
+                    style: TextStyle(
+                      fontFamily: "SEGOE_UI",
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ),
@@ -203,10 +207,11 @@ class ExpensesScreenState extends State<ExpensesScreen> {
       }
 
       return RefreshIndicator(
+        color: AppColor.primary,
         onRefresh: () async {
           context.read<ExpenseBloc>().add(
-                GetExpensesByMonthEvent(time: DateTime.now()),
-              );
+            GetExpensesByMonthEvent(time: DateTime.now()),
+          );
         },
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -222,7 +227,9 @@ class ExpensesScreenState extends State<ExpensesScreen> {
               onLongPress: isSelectionMode
                   ? null
                   : () {
-                      context.read<ExpenseBloc>().add(EnableSelectionModeEvent());
+                      context.read<ExpenseBloc>().add(
+                        EnableSelectionModeEvent(),
+                      );
                     },
               onTap: isSelectionMode
                   ? () {

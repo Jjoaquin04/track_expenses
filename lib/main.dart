@@ -11,83 +11,71 @@ import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.
 import 'package:track_expenses/featured/expenses/presentation/pages/expenses_screen.dart';
 import 'package:track_expenses/featured/expenses/presentation/pages/welcome_screen.dart';
 
-/// Callback de fondo para HomeWidget
+// Callback de fondo para HomeWidget
 @pragma('vm:entry-point')
 void backgroundCallback(Uri? uri) async {
-  // Comprobar si es una actualización de datos
-  if (uri?.host == 'update') {
-    print('HomeWidget: Callback de fondo recibido.');
-    try {
-      // 1. Inicializar todo lo necesario en el Isolate de fondo
-      WidgetsFlutterBinding.ensureInitialized();
-      await Hive.initFlutter();
-      if (!Hive.isAdapterRegistered(ExpenseModelAdapter().typeId)) {
-        Hive.registerAdapter(ExpenseModelAdapter());
-      }
-
-      // 2. Abrir las cajas de Hive
-      final expenseBox = await Hive.openBox<ExpenseModel>(
-        HiveConstants.expenseBox,
-      );
-      final userConfigBox = await Hive.openBox('user_config');
-
-      // 3. Obtener los datos (string JSON) guardados desde Kotlin
-      final dataString = await HomeWidget.getWidgetData<String>('expense_data');
-
-      if (dataString == null) {
-        print('HomeWidget: No se encontraron datos para procesar.');
-        return;
-      }
-
-      print('HomeWidget: Datos recibidos: $dataString');
-
-      // 4. Parsear el JSON
-      final data = jsonDecode(dataString) as Map<String, dynamic>;
-
-      final amountStr = data['amount'] as String?;
-      final amount = amountStr != null ? double.tryParse(amountStr) : null;
-      final dateStr = data['date'] as String?;
-      final date = (dateStr != null) ? DateTime.tryParse(dateStr) : null;
-      final typeStr = data['type'] as String?;
-      final fixedExpense = data['fixedExpense'] as int?;
-
-      if (amount == null || date == null || typeStr == null) {
-        print('HomeWidget: Datos inválidos (amount, date o type es nulo).');
-        return;
-      }
-
-      // 5. Obtener el dueño del gasto
-      final expenseOwner = userConfigBox.get(
-        'user_name',
-        defaultValue: 'Usuario',
-      );
-
-      // 6. Crear el modelo
-      final model = ExpenseModel(
-        expenseOwner: expenseOwner,
-        expenseName: data['name'] as String? ?? '',
-        amount: amount,
-        category: data['category'] as String? ?? 'Otros',
-        date: date,
-        type: typeStr == "expense" ? 0 : 1,
-        fixedExpense: fixedExpense ?? 0,
-      );
-
-      // 7. Guardar en Hive
-      await expenseBox.add(model);
-      print('HomeWidget: Gasto guardado en Hive: ${model.expenseName}');
-
-      // 8. Cerrar cajas en el Isolate de fondo
-      await expenseBox.close();
-      await userConfigBox.close();
-
-      // 9. (IMPORTANTE) Limpiar los datos para que no se procesen de nuevo
-      await HomeWidget.saveWidgetData<String>('expense_data', null);
-      print('HomeWidget: Datos de HomeWidget limpiados.');
-    } catch (e, s) {
-      print('HomeWidget: Error en backgroundCallback: $e');
-      print(s);
+  try {
+    // 1. Inicializar todo lo necesario en el Isolate de fondo
+    WidgetsFlutterBinding.ensureInitialized();
+    await Hive.initFlutter();
+    if (!Hive.isAdapterRegistered(ExpenseModelAdapter().typeId)) {
+      Hive.registerAdapter(ExpenseModelAdapter());
     }
+
+    // 2. Abrir las cajas de Hive
+    final expenseBox = await Hive.openBox<ExpenseModel>(
+      HiveConstants.expenseBox,
+    );
+    final userConfigBox = await Hive.openBox('user_config');
+
+    // 3. Obtener los datos (string JSON) guardados desde Kotlin
+    final dataString = await HomeWidget.getWidgetData<String>('expense_data');
+
+    if (dataString == null) {
+      return;
+    }
+
+    // 4. Parsear el JSON
+    final data = jsonDecode(dataString) as Map<String, dynamic>;
+
+    final amountStr = data['amount'] as String?;
+    final amount = amountStr != null ? double.tryParse(amountStr) : null;
+    final dateStr = data['date'] as String?;
+    final date = (dateStr != null) ? DateTime.tryParse(dateStr) : null;
+    final typeStr = data['type'] as String?;
+    final fixedExpense = data['fixedExpense'] as int?;
+
+    if (amount == null || date == null || typeStr == null) {
+      return;
+    }
+
+    // 5. Obtener el dueño del gasto
+    final expenseOwner = userConfigBox.get(
+      'user_name',
+      defaultValue: 'Usuario',
+    );
+
+    // 6. Crear el modelo
+    final model = ExpenseModel(
+      expenseOwner: expenseOwner,
+      expenseName: data['name'] as String? ?? '',
+      amount: amount,
+      category: data['category'] as String? ?? 'Otros',
+      date: date,
+      type: typeStr == "expense" ? 0 : 1,
+      fixedExpense: fixedExpense ?? 0,
+    );
+
+    // 7. Guardar en Hive
+    await expenseBox.add(model);
+
+    // 8. Cerrar cajas en el Isolate de fondo
+    await expenseBox.close();
+    await userConfigBox.close();
+
+    await HomeWidget.saveWidgetData<String>('expense_data', null);
+  } catch (e) {
+    throw Exception(e.toString());
   }
 }
 
@@ -95,8 +83,8 @@ void main() async {
   // 1. Inicialización estándar
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Registrar el callback de HomeWidget (en lugar de Workmanager)
-  HomeWidget.registerBackgroundCallback(backgroundCallback);
+  // 2. Registrar el callback de HomeWidget (MODIFICADO)
+  HomeWidget.registerInteractivityCallback(backgroundCallback);
 
   // 3. Inicialización de Hive para la app principal
   await Hive.initFlutter();

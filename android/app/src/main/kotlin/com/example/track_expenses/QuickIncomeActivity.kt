@@ -15,6 +15,11 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import es.antonborri.home_widget.HomeWidgetPlugin
+// IMPORTS AÑADIDOS
+import android.content.Intent
+import android.net.Uri
+import es.antonborri.home_widget.HomeWidgetBackgroundReceiver
+
 
 class QuickIncomeActivity : Activity() {
 
@@ -90,8 +95,14 @@ class QuickIncomeActivity : Activity() {
                 .putString("expense_data", jsonString)
                 .apply()
 
-            // Esto despierta el 'backgroundCallback' en Dart
-            HomeWidgetPlugin.updateWidget(this)
+            // MODIFICADO: Esto despierta el 'backgroundCallback' en Dart
+            // Creamos un Intent para el HomeWidgetBackgroundReceiver
+            val intent = Intent(this, HomeWidgetBackgroundReceiver::class.java).apply {
+                action = "es.antonborri.home_widget.action.BACKGROUND"
+                // Este URI será recibido por el callback de Dart para que sepa qué hacer
+                data = Uri.parse("homewidget://update") 
+            }
+            sendBroadcast(intent)
 
             Toast.makeText(this, "Ingreso guardado", Toast.LENGTH_SHORT).show()
             
@@ -99,8 +110,6 @@ class QuickIncomeActivity : Activity() {
             Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
         }
-
-        // 4. ELIMINAMOS TODA LA LÓGICA DE SHARED PREFERENCES Y WORKMANAGER
 
         // Terminar la actividad
         finish()
