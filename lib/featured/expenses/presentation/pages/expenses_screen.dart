@@ -1,3 +1,6 @@
+import 'dart:ui';
+import 'dart:isolate';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:track_expenses/core/themes/app_color.dart';
@@ -7,10 +10,12 @@ import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
+import 'package:track_expenses/featured/expenses/presentation/pages/previous_months_screen.dart';
 import 'package:track_expenses/featured/expenses/presentation/widgets/add_expense_bottom_sheet.dart';
 import 'package:track_expenses/featured/expenses/presentation/widgets/expense_app_bar.dart';
 import 'package:track_expenses/featured/expenses/presentation/widgets/expense_list_item.dart';
 import 'package:track_expenses/featured/expenses/presentation/widgets/summary_cards_widget.dart';
+import 'package:track_expenses/main.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
@@ -20,12 +25,78 @@ class ExpensesScreen extends StatefulWidget {
 }
 
 class ExpensesScreenState extends State<ExpensesScreen> {
+  ReceivePort? _receivePort;
+
   @override
   void initState() {
     super.initState();
     context.read<ExpenseBloc>().add(
       GetExpensesByMonthEvent(time: DateTime.now()),
     );
+    _initializeIsolateCommunication();
+  }
+
+  void _initializeIsolateCommunication() {
+    _receivePort = ReceivePort();
+    IsolateNameServer.registerPortWithName(
+      _receivePort!.sendPort,
+      mainIsolatePortName,
+    );
+
+    _receivePort!.listen((dynamic data) {
+      if (data is String) {
+        _processAndAddExpense(data);
+      }
+    });
+  }
+
+  Future<void> _processAndAddExpense(String jsonString) async {
+    try {
+      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+
+      final amountStr = data['amount'] as String?;
+      final amount = amountStr != null ? double.tryParse(amountStr) : null;
+      final dateStr = data['date'] as String?;
+      final date = (dateStr != null) ? DateTime.tryParse(dateStr) : null;
+      final typeStr = data['type'] as String?;
+      final fixedExpense = data['fixedExpense'] as int?;
+
+      if (amount == null || date == null || typeStr == null) {
+        return;
+      }
+
+      final expenseOwner = await UserConfig.getUserName();
+      final name = data['name'] as String? ?? '';
+      final category = data['category'] as String? ?? 'Otros';
+      final type = typeStr == "expense"
+          ? TransactionType.expense
+          : TransactionType.income;
+
+      // 4. Añadir el evento al BLoC.
+      // El BLoC se encargará de guardarlo en Hive y actualizar el estado.
+      if (mounted) {
+        context.read<ExpenseBloc>().add(
+          AddExpenseEvent(
+            expenseOwner: expenseOwner,
+            expenseName: name,
+            amount: amount,
+            category: category,
+            date: date,
+            type: type,
+            fixedExpense: fixedExpense ?? 0,
+          ),
+        );
+      }
+    } catch (e) {
+      return;
+    }
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping(mainIsolatePortName);
+    _receivePort?.close();
+    super.dispose();
   }
 
   Future<void> saveExpense({
@@ -112,20 +183,59 @@ class ExpensesScreenState extends State<ExpensesScreen> {
           bottomNavigationBar: isSelectionMode
               ? _buildSelectionBottomBar(selectedCount)
               : null,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
           floatingActionButton: isSelectionMode
               ? null
-              : FloatingActionButton(
-                  backgroundColor: AppColor.background,
-                  hoverElevation: 2.0,
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(color: AppColor.primary, width: 2.5),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  onPressed: _showAddExpenseBottomSheet,
-                  child: const Icon(
-                    Icons.add_rounded,
-                    color: AppColor.primary,
-                    size: 25,
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      FloatingActionButton(
+                        heroTag: 'previousMonthsButton',
+                        backgroundColor: AppColor.background,
+                        hoverElevation: 2.0,
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(
+                            color: AppColor.primary,
+                            width: 2.5,
+                          ),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PreviousMonthsScreen(),
+                            ),
+                          );
+                        },
+                        child: const Icon(
+                          Icons.calendar_month_rounded,
+                          color: AppColor.primary,
+                          size: 25,
+                        ),
+                      ),
+                      FloatingActionButton(
+                        heroTag: 'addExpenseButton',
+                        backgroundColor: AppColor.background,
+                        hoverElevation: 2.0,
+                        shape: RoundedRectangleBorder(
+                          side: const BorderSide(
+                            color: AppColor.primary,
+                            width: 2.5,
+                          ),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        onPressed: _showAddExpenseBottomSheet,
+                        child: const Icon(
+                          Icons.add_rounded,
+                          color: AppColor.primary,
+                          size: 25,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
         );

@@ -17,7 +17,10 @@ class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: AppColor.background,
       elevation: 4,
-      shadowColor: AppColor.secondary.withValues(alpha: 0.05),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppColor.primary, width: 2.5),
+      ),
       title: FutureBuilder<String>(
         future: UserConfig.getUserName(),
         builder: (context, snapshot) {
