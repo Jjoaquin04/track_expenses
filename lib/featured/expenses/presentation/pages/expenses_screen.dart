@@ -10,11 +10,13 @@ import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
-import 'package:track_expenses/featured/expenses/presentation/pages/previous_months_screen.dart';
-import 'package:track_expenses/featured/expenses/presentation/widgets/add_expense_bottom_sheet.dart';
-import 'package:track_expenses/featured/expenses/presentation/widgets/expense_app_bar.dart';
-import 'package:track_expenses/featured/expenses/presentation/widgets/expense_list_item.dart';
-import 'package:track_expenses/featured/expenses/presentation/widgets/summary_cards_widget.dart';
+import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/delete_confirmation_dialog.dart';
+import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/expense_floating_action_buttons.dart';
+import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/expense_list_builder.dart';
+import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/selection_bottom_bar.dart';
+import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/expense_app_bar.dart';
+import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/summary_cards_widget.dart';
+import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/add_expense_bottom_sheet.dart';
 import 'package:track_expenses/main.dart';
 
 class ExpensesScreen extends StatefulWidget {
@@ -153,7 +155,8 @@ class ExpensesScreenState extends State<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExpenseBloc, ExpenseState>(
+    return BlocConsumer<ExpenseBloc, ExpenseState>(
+      listener: _handleExpenseStateChanges,
       builder: (context, state) {
         final isSelectionMode = state is ExpenseSelectionMode;
         final selectedCount = isSelectionMode ? state.selectedIds.length : 0;
@@ -172,71 +175,21 @@ class ExpensesScreenState extends State<ExpensesScreen> {
                 indent: 10,
                 endIndent: 10,
               ),
-              Expanded(
-                child: BlocConsumer<ExpenseBloc, ExpenseState>(
-                  listener: _handleExpenseStateChanges,
-                  builder: _buildExpenseList,
-                ),
-              ),
+              const Expanded(child: ExpenseListBuilder()),
             ],
           ),
           bottomNavigationBar: isSelectionMode
-              ? _buildSelectionBottomBar(selectedCount)
+              ? SelectionBottomBar(
+                  selectedCount: selectedCount,
+                  onDelete: () => DeleteConfirmationDialog.show(context),
+                )
               : null,
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           floatingActionButton: isSelectionMode
               ? null
-              : Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      FloatingActionButton(
-                        heroTag: 'previousMonthsButton',
-                        backgroundColor: AppColor.background,
-                        hoverElevation: 2.0,
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            color: AppColor.primary,
-                            width: 2.5,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const PreviousMonthsScreen(),
-                            ),
-                          );
-                        },
-                        child: const Icon(
-                          Icons.calendar_month_rounded,
-                          color: AppColor.primary,
-                          size: 25,
-                        ),
-                      ),
-                      FloatingActionButton(
-                        heroTag: 'addExpenseButton',
-                        backgroundColor: AppColor.background,
-                        hoverElevation: 2.0,
-                        shape: RoundedRectangleBorder(
-                          side: const BorderSide(
-                            color: AppColor.primary,
-                            width: 2.5,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        onPressed: _showAddExpenseBottomSheet,
-                        child: const Icon(
-                          Icons.add_rounded,
-                          color: AppColor.primary,
-                          size: 25,
-                        ),
-                      ),
-                    ],
-                  ),
+              : ExpenseFloatingActionButtons(
+                  onAddExpense: _showAddExpenseBottomSheet,
                 ),
         );
       },
@@ -250,213 +203,11 @@ class ExpensesScreenState extends State<ExpensesScreen> {
       SnackBarHelper.showSuccess(context, 'Gasto actualizado correctamente');
     } else if (state is ExpenseDeleted) {
       SnackBarHelper.showSuccess(context, 'Gasto eliminado');
-      // Después de eliminar, recargar los gastos del mes actual
       context.read<ExpenseBloc>().add(
         GetExpensesByMonthEvent(time: DateTime.now()),
       );
     } else if (state is ExpenseError) {
       SnackBarHelper.showError(context, 'Error: ${state.message}');
     }
-  }
-
-  Widget _buildExpenseList(BuildContext context, ExpenseState state) {
-    if (state is ExpenseInitial) {
-      return const Center(
-        child: Text(
-          "Comienza añadiendo un nuevo gasto o ingreso",
-          style: TextStyle(
-            fontFamily: "SEGOE_UI",
-            fontSize: 16,
-            color: Colors.grey,
-          ),
-        ),
-      );
-    }
-
-    if (state is ExpenseLoaded || state is ExpenseSelectionMode) {
-      late final List<Expense> expenses;
-      late final Set<String> selectedIds;
-
-      if (state is ExpenseLoaded) {
-        expenses = state.expenses;
-        selectedIds = {};
-      } else {
-        final selectionState = state as ExpenseSelectionMode;
-        expenses = selectionState.expenses;
-        selectedIds = selectionState.selectedIds;
-      }
-
-      final isSelectionMode = state is ExpenseSelectionMode;
-
-      if (expenses.isEmpty) {
-        return RefreshIndicator(
-          color: AppColor.primary,
-          onRefresh: () async {
-            context.read<ExpenseBloc>().add(
-              GetExpensesByMonthEvent(time: DateTime.now()),
-            );
-          },
-          child: ListView(
-            children: const [
-              Padding(
-                padding: EdgeInsets.only(top: 20.0),
-                child: Center(
-                  child: Text(
-                    "No hay movimientos registrados",
-                    style: TextStyle(
-                      fontFamily: "SEGOE_UI",
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-
-      return RefreshIndicator(
-        color: AppColor.primary,
-        onRefresh: () async {
-          context.read<ExpenseBloc>().add(
-            GetExpensesByMonthEvent(time: DateTime.now()),
-          );
-        },
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          itemCount: expenses.length,
-          itemBuilder: (context, index) {
-            final expense = expenses[index];
-            final isSelected = selectedIds.contains(expense.id);
-
-            return ExpenseListItem(
-              expense: expense,
-              isSelectionMode: isSelectionMode,
-              isSelected: isSelected,
-              onLongPress: isSelectionMode
-                  ? null
-                  : () {
-                      context.read<ExpenseBloc>().add(
-                        EnableSelectionModeEvent(),
-                      );
-                    },
-              onTap: isSelectionMode
-                  ? () {
-                      context.read<ExpenseBloc>().add(
-                        ToggleExpenseSelectionEvent(expenseId: expense.id!),
-                      );
-                    }
-                  : null,
-            );
-          },
-        ),
-      );
-    }
-
-    return const Center(
-      child: Text(
-        "Estado desconocido",
-        style: TextStyle(
-          fontFamily: "SEGOE_UI",
-          fontSize: 16,
-          color: Colors.grey,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSelectionBottomBar(int selectedCount) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        color: AppColor.background,
-        border: Border(
-          top: BorderSide(color: AppColor.secondary.withValues(alpha: 0.3)),
-        ),
-      ),
-      child: Row(
-        children: [
-          // Botón cancelar
-          TextButton.icon(
-            onPressed: () {
-              context.read<ExpenseBloc>().add(DisableSelectionModeEvent());
-            },
-            icon: const Icon(Icons.close, color: Colors.grey),
-            label: const Text(
-              'Cancelar',
-              style: TextStyle(color: Colors.grey, fontFamily: 'SEGOE_UI'),
-            ),
-          ),
-          const Spacer(),
-          // Contador de seleccionados
-          Text(
-            '$selectedCount seleccionados',
-            style: const TextStyle(
-              fontFamily: 'SEGOE_UI',
-              fontWeight: FontWeight.bold,
-              color: AppColor.primary,
-            ),
-          ),
-          const Spacer(),
-          // Botón eliminar
-          if (selectedCount > 0)
-            TextButton.icon(
-              onPressed: () {
-                _showDeleteConfirmationDialog();
-              },
-              icon: const Icon(Icons.delete, color: Colors.red),
-              label: const Text(
-                'Eliminar',
-                style: TextStyle(color: Colors.red, fontFamily: 'SEGOE_UI'),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            side: BorderSide(color: AppColor.primary, width: 2.0),
-          ),
-          title: const Text(
-            'Confirmar eliminación',
-            style: TextStyle(
-              fontFamily: 'SEGOE_UI',
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: const Text(
-            '¿Estás seguro de que quieres eliminar los gastos seleccionados?',
-            style: TextStyle(fontFamily: 'SEGOE_UI'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(color: Colors.grey, fontFamily: 'SEGOE_UI'),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.read<ExpenseBloc>().add(DeleteSelectedExpensesEvent());
-              },
-              child: const Text(
-                'Eliminar',
-                style: TextStyle(color: Colors.red, fontFamily: 'SEGOE_UI'),
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 }
