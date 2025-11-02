@@ -1,0 +1,125 @@
+{
+  "@@locale": "es",
+  
+  "welcomeTitle": "¡Bienvenido!",
+  "welcomeSubtitle": "Configura tu perfil para comenzar",
+  "yourName": "Tu nombre",
+  "yourNameHint": "Ej: Juan Pérez",
+  "initialBalance": "Balance inicial",
+  "initialBalanceHint": "Ej: 1000.00",
+  "initialBalanceHelper": "Cantidad de dinero con la que comienzas",
+  "continueButton": "Comenzar",
+  "pleaseEnterName": "Por favor ingresa tu nombre",
+  "pleaseEnterBalance": "Por favor ingresa un balance inicial",
+  "enterValidNumber": "Ingresa un número válido",
+  "balanceCannotBeNegative": "El balance no puede ser negativo",
+  
+  "hello": "Hola",
+  "total": "Total",
+  "expenses": "Gastos",
+  "totalExpenses": "Gastos Totales",
+  "totalIncome": "Ingresos Totales",
+  "currentBalance": "Balance Actual",
+  "noExpensesYet": "Aún no hay gastos",
+  "startAddingExpenses": "Comienza a agregar tus gastos usando el botón +",
+  "errorLoadingExpenses": "Error al cargar los gastos",
+  "retryButton": "Reintentar",
+  
+  "fixed": "Fijo",
+  "dailyExpense": "Gasto diario",
+  
+  "newTransaction": "Nueva Transacción",
+  "type": "Tipo",
+  "expense": "Gasto",
+  "income": "Ingreso",
+  "category": "Categoría",
+  "name": "Nombre",
+  "nameHint": "Ej: Supermercado",
+  "amount": "Monto",
+  "amountHint": "Ej: 25.50",
+  "date": "Fecha",
+  "dateHint": "Selecciona una fecha",
+  "isFixedExpense": "¿Es un gasto fijo?",
+  "saveButton": "Guardar",
+  "pleaseEnterValidAmount": "Por favor ingresa un monto válido",
+  "pleaseSelectDate": "Por favor selecciona una fecha",
+  "pleaseEnterTransactionName": "Por favor ingresa un nombre para la transacción",
+  
+  "itemsSelected": "{count} seleccionados",
+  "@itemsSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  
+  "confirmDelete": "Confirmar eliminación",
+  "confirmDeleteMessage": "¿Estás seguro de que deseas eliminar los gastos seleccionados?",
+  "no": "No",
+  "yes": "Sí",
+  
+  "previousMonths": "Meses Anteriores",
+  "monthYear": "{month} {year}",
+  "@monthYear": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
+  "noDataForMonth": "No hay datos para este mes",
+  "expensesByCategory": "Gastos por Categoría",
+  "incomeByCategory": "Ingresos por Categoría",
+  
+  "january": "Enero",
+  "february": "Febrero",
+  "march": "Marzo",
+  "april": "Abril",
+  "may": "Mayo",
+  "june": "Junio",
+  "july": "Julio",
+  "august": "Agosto",
+  "september": "Septiembre",
+  "october": "Octubre",
+  "november": "Noviembre",
+  "december": "Diciembre",
+  
+  "categoryFood": "Comida",
+  "categoryTransport": "Transporte",
+  "categoryEntertainment": "Entretenimiento",
+  "categoryHealth": "Salud",
+  "categoryEducation": "Educación",
+  "categoryClothing": "Ropa",
+  "categoryOther": "Otros",
+  
+  "categorySalary": "Salario",
+  "categoryBonus": "Bonificación",
+  "categoryInvestment": "Inversión",
+  "categoryGift": "Regalo",
+  "categoryOtherIncome": "Otros Ingresos",
+  
+  "settings": "Configuración",
+  "language": "Idioma",
+  "selectLanguage": "Seleccionar Idioma",
+  "english": "Inglés",
+  "spanish": "Español",
+  "languageChanged": "Idioma cambiado exitosamente",
+  
+  "expenseAddedSuccess": "Gasto agregado exitosamente",
+  "expenseDeletedSuccess": "Gasto(s) eliminado(s) exitosamente",
+  "errorOccurred": "Ocurrió un error",
+  
+  "personalMovementTracking": "Seguimiento de Movimientos Personales",
+  "fixedTransactionInfo": "Información de movimiento fijo",
+  "fixedTransactionDescription": "Este gasto está marcado como fijo. Los movimientos fijos son aquellos que se repiten mensualmente, es decir, se añaden automáticamente.",
+  
+  "startAddingTransactions": "Comienza añadiendo un nuevo gasto o ingreso",
+  "noTransactionsRecorded": "No hay movimientos registrados",
+  "unknownState": "Estado desconocido"
+}

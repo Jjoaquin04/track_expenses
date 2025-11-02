@@ -11,7 +11,7 @@
         android:id="@+id/widget_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Añade un gasto"
+        android:text="@string/widget_add_expense"
         android:textAlignment="center"
         android:textStyle="bold"
         android:textColor="#000000"
@@ -22,6 +22,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/output_arrow"
-        android:contentDescription="Expense Icon"
+        android:contentDescription="@string/widget_expense_icon_desc"
     />
 </LinearLayout>
