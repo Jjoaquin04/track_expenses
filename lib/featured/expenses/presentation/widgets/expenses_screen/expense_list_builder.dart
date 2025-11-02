@@ -6,19 +6,22 @@ import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
 import 'package:track_expenses/featured/expenses/presentation/widgets/expenses_screen/expense_list_item.dart';
+import 'package:track_expenses/l10n/app_localizations.dart';
 
 class ExpenseListBuilder extends StatelessWidget {
   const ExpenseListBuilder({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return BlocBuilder<ExpenseBloc, ExpenseState>(
       builder: (context, state) {
         if (state is ExpenseInitial) {
-          return const Center(
+          return Center(
             child: Text(
-              "Comienza añadiendo un nuevo gasto o ingreso",
-              style: TextStyle(
+              l10n.startAddingTransactions,
+              style: const TextStyle(
                 fontFamily: "SEGOE_UI",
                 fontSize: 16,
                 color: Colors.grey,
@@ -51,13 +54,13 @@ class ExpenseListBuilder extends StatelessWidget {
                 );
               },
               child: ListView(
-                children: const [
+                children: [
                   Padding(
-                    padding: EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsets.only(top: 20.0),
                     child: Center(
                       child: Text(
-                        "No hay movimientos registrados",
-                        style: TextStyle(
+                        l10n.noTransactionsRecorded,
+                        style: const TextStyle(
                           fontFamily: "SEGOE_UI",
                           fontSize: 16,
                           color: Colors.grey,
@@ -111,10 +114,10 @@ class ExpenseListBuilder extends StatelessWidget {
           );
         }
 
-        return const Center(
+        return Center(
           child: Text(
-            "Estado desconocido",
-            style: TextStyle(
+            l10n.unknownState,
+            style: const TextStyle(
               fontFamily: "SEGOE_UI",
               fontSize: 16,
               color: Colors.grey,

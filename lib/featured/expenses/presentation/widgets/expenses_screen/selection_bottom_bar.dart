@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:track_expenses/core/themes/app_color.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
+import 'package:track_expenses/l10n/app_localizations.dart';
 
 class SelectionBottomBar extends StatelessWidget {
   final int selectedCount;
@@ -16,6 +17,8 @@ class SelectionBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       decoration: BoxDecoration(
@@ -32,15 +35,18 @@ class SelectionBottomBar extends StatelessWidget {
               context.read<ExpenseBloc>().add(DisableSelectionModeEvent());
             },
             icon: const Icon(Icons.close, color: Colors.grey),
-            label: const Text(
-              'Cancelar',
-              style: TextStyle(color: Colors.grey, fontFamily: 'SEGOE_UI'),
+            label: Text(
+              l10n.cancel,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontFamily: 'SEGOE_UI',
+              ),
             ),
           ),
           const Spacer(),
           // Contador de seleccionados
           Text(
-            '$selectedCount seleccionados',
+            l10n.itemsSelected(selectedCount),
             style: const TextStyle(
               fontFamily: 'SEGOE_UI',
               fontWeight: FontWeight.bold,
@@ -53,9 +59,12 @@ class SelectionBottomBar extends StatelessWidget {
             TextButton.icon(
               onPressed: onDelete,
               icon: const Icon(Icons.delete, color: Colors.red),
-              label: const Text(
-                'Eliminar',
-                style: TextStyle(color: Colors.red, fontFamily: 'SEGOE_UI'),
+              label: Text(
+                l10n.delete,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontFamily: 'SEGOE_UI',
+                ),
               ),
             ),
         ],

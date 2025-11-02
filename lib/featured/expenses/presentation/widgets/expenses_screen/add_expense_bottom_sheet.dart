@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:track_expenses/core/constant/expenses_category.dart';
 import 'package:track_expenses/core/themes/app_color.dart';
 import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
+import 'package:track_expenses/l10n/app_localizations.dart';
 
 class AddExpenseBottomSheet extends StatefulWidget {
   final Future<void> Function({
@@ -59,6 +60,8 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
@@ -93,9 +96,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                "Nueva Transacción",
-                style: TextStyle(
+              Text(
+                l10n.newTransaction,
+                style: const TextStyle(
                   fontFamily: "SEGOE_UI",
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -110,9 +113,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Tipo",
-                          style: TextStyle(
+                        Text(
+                          l10n.type,
+                          style: const TextStyle(
                             fontFamily: "SEGOE_UI",
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -162,19 +165,19 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                               ),
                             ),
                           ),
-                          dropdownMenuEntries: const [
+                          dropdownMenuEntries: [
                             DropdownMenuEntry(
                               value: TransactionType.expense,
-                              label: "Gasto",
-                              leadingIcon: Icon(
+                              label: l10n.expense,
+                              leadingIcon: const Icon(
                                 Icons.arrow_downward,
                                 color: Colors.red,
                               ),
                             ),
                             DropdownMenuEntry(
                               value: TransactionType.income,
-                              label: "Ingreso",
-                              leadingIcon: Icon(
+                              label: l10n.income,
+                              leadingIcon: const Icon(
                                 Icons.arrow_upward,
                                 color: Colors.green,
                               ),
@@ -186,9 +189,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                   ),
                   Column(
                     children: [
-                      const Text(
-                        "Fijo",
-                        style: TextStyle(
+                      Text(
+                        l10n.fixed,
+                        style: const TextStyle(
                           fontFamily: "SEGOE_UI",
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -210,9 +213,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
               const SizedBox(height: 20),
 
               // Nombre del gasto/ingreso
-              const Text(
-                "Nombre",
-                style: TextStyle(
+              Text(
+                l10n.name,
+                style: const TextStyle(
                   fontFamily: "SEGOE_UI",
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -223,7 +226,7 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
               TextFormField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  hintText: "Ej: Compra de supermercado",
+                  hintText: l10n.nameHint,
                   hintStyle: TextStyle(
                     color: AppColor.secondary.withValues(alpha: 0.5),
                     fontFamily: "SEGOE_UI",
@@ -253,9 +256,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
               const SizedBox(height: 20),
 
               // Categoría
-              const Text(
-                "Categoría",
-                style: TextStyle(
+              Text(
+                l10n.category,
+                style: const TextStyle(
                   fontFamily: "SEGOE_UI",
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -317,9 +320,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                       padding: const EdgeInsets.only(right: 15.0),
                       child: Column(
                         children: [
-                          const Text(
-                            "Cantidad",
-                            style: TextStyle(
+                          Text(
+                            l10n.amount,
+                            style: const TextStyle(
                               fontFamily: "SEGOE_UI",
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -333,7 +336,7 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                               decimal: true,
                             ),
                             decoration: InputDecoration(
-                              hintText: "0.00",
+                              hintText: l10n.amountHint,
                               prefixIcon: Icon(
                                 Icons.euro_rounded,
                                 color: AppColor.primary,
@@ -388,9 +391,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                   Expanded(
                     child: Column(
                       children: [
-                        const Text(
-                          "Fecha",
-                          style: TextStyle(
+                        Text(
+                          l10n.date,
+                          style: const TextStyle(
                             fontFamily: "SEGOE_UI",
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -401,7 +404,7 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                         TextFormField(
                           controller: dateController,
                           decoration: InputDecoration(
-                            hintText: "-",
+                            hintText: l10n.dateHint,
                             prefixIcon: Icon(
                               Icons.calendar_month_rounded,
                               color: AppColor.primary,
@@ -480,9 +483,9 @@ class AddExpenseBottomSheetState extends State<AddExpenseBottomSheet> {
                     ),
                     elevation: 2,
                   ),
-                  child: const Text(
-                    "Guardar",
-                    style: TextStyle(
+                  child: Text(
+                    l10n.saveButton,
+                    style: const TextStyle(
                       fontFamily: "SEGOE_UI",
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
