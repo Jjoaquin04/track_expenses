@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/featured/expenses/domain/entity/expense.dart';
 
 /// Clase base para todos los eventos de gastos
 abstract class ExpenseEvent extends Equatable {

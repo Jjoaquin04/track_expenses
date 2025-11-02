@@ -7,15 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:home_widget/home_widget.dart';
-import 'package:track_expenses/core/constant/hive_constants.dart';
-import 'package:track_expenses/core/dependency_injection/dependecy_injection.dart';
-import 'package:track_expenses/core/localization/locale_cubit.dart';
-import 'package:track_expenses/core/utils/user_config.dart';
-import 'package:track_expenses/featured/expenses/data/expense_model.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
-import 'package:track_expenses/featured/expenses/presentation/pages/expenses_screen.dart';
-import 'package:track_expenses/featured/expenses/presentation/pages/welcome_screen.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
+import 'package:nostra/core/constant/hive_constants.dart';
+import 'package:nostra/core/dependency_injection/dependecy_injection.dart';
+import 'package:nostra/core/localization/locale_cubit.dart';
+import 'package:nostra/core/utils/user_config.dart';
+import 'package:nostra/featured/expenses/data/expense_model.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_bloc.dart';
+import 'package:nostra/featured/expenses/presentation/pages/expenses_screen.dart';
+import 'package:nostra/featured/expenses/presentation/pages/welcome_screen.dart';
+import 'package:nostra/l10n/app_localizations.dart';
 
 const String mainIsolatePortName = "main_isolate_port";
 // Callback de fondo para HomeWidget

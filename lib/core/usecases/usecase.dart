@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:track_expenses/core/errors/failure.dart';
+import 'package:nostra/core/errors/failure.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class Usecase<T, Params> {

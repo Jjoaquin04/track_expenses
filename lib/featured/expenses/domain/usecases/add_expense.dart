@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:track_expenses/core/errors/failure.dart';
-import 'package:track_expenses/core/usecases/usecase.dart';
-import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
-import 'package:track_expenses/featured/expenses/domain/repository/expense_repository.dart';
+import 'package:nostra/core/errors/failure.dart';
+import 'package:nostra/core/usecases/usecase.dart';
+import 'package:nostra/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/featured/expenses/domain/repository/expense_repository.dart';
 
 class AddExpense extends Usecase<Expense, ExpenseParams> {
   final ExpenseRepository repository;

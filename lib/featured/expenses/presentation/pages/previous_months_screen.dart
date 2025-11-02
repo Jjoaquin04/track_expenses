@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:track_expenses/core/themes/app_color.dart';
-import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
-import 'package:track_expenses/featured/expenses/presentation/widgets/previous_months_screen/monthly_expenses_page_view.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
+import 'package:nostra/core/themes/app_color.dart';
+import 'package:nostra/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_bloc.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_event.dart';
+import 'package:nostra/featured/expenses/presentation/widgets/previous_months_screen/monthly_expenses_page_view.dart';
+import 'package:nostra/l10n/app_localizations.dart';
 
 class PreviousMonthsScreen extends StatefulWidget {
   const PreviousMonthsScreen({super.key});

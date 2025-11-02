@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:track_expenses/core/constant/expenses_category.dart';
-import 'package:track_expenses/core/themes/app_color.dart';
-import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
+import 'package:nostra/core/constant/expenses_category.dart';
+import 'package:nostra/core/themes/app_color.dart';
+import 'package:nostra/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/l10n/app_localizations.dart';
 
 class AddExpenseBottomSheet extends StatefulWidget {
   final Future<void> Function({

@@ -1,4 +1,4 @@
-import 'package:track_expenses/l10n/app_localizations.dart';
+import 'package:nostra/l10n/app_localizations.dart';
 
 String getMonthName(int month, AppLocalizations l10n) {
   switch (month) {

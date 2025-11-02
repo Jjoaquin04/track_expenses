@@ -6,9 +6,9 @@ Esta carpeta contiene las capturas de pantalla que se muestran en el README.
 
 Para que el README se vea completo, necesitas añadir las siguientes capturas:
 
-1. **home.png** - Pantalla principal mostrando la lista de gastos e ingresos
-2. **add_expense.png** - Modal/pantalla de agregar un nuevo gasto o ingreso
-3. **monthly_view.png** - Vista de meses anteriores con las tarjetas de resumen
+1. **welcome_screen.png** - Pantalla principal de bienvenida al abrir la app
+2. **expense_screen.png** - Pantalla de ver y añadir movimientos
+3. **previous_month_screen.png** - Pantalla de meses anteriores con las tarjetas de resumen
 
 ## 📐 Recomendaciones
 

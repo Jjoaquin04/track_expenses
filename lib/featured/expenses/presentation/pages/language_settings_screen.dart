@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:track_expenses/core/localization/locale_cubit.dart';
-import 'package:track_expenses/core/themes/app_color.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
+import 'package:nostra/core/localization/locale_cubit.dart';
+import 'package:nostra/core/themes/app_color.dart';
+import 'package:nostra/l10n/app_localizations.dart';
 
 class LanguageSettingsScreen extends StatelessWidget {
   const LanguageSettingsScreen({super.key});

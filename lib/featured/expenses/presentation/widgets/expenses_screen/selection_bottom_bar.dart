@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:track_expenses/core/themes/app_color.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
+import 'package:nostra/core/themes/app_color.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_bloc.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_event.dart';
+import 'package:nostra/l10n/app_localizations.dart';
 
 class SelectionBottomBar extends StatelessWidget {
   final int selectedCount;

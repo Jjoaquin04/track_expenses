@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:track_expenses/core/themes/app_color.dart';
-import 'package:track_expenses/core/utils/user_config.dart';
-import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
-import 'package:track_expenses/featured/expenses/presentation/pages/language_settings_screen.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
+import 'package:nostra/core/themes/app_color.dart';
+import 'package:nostra/core/utils/user_config.dart';
+import 'package:nostra/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_bloc.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_state.dart';
+import 'package:nostra/featured/expenses/presentation/pages/language_settings_screen.dart';
+import 'package:nostra/l10n/app_localizations.dart';
 
 class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ExpenseAppBar({super.key});

@@ -1,8 +1,8 @@
 import 'package:hive/hive.dart';
-import 'package:track_expenses/core/constant/hive_constants.dart';
-import 'package:track_expenses/core/errors/exception.dart';
-import 'package:track_expenses/featured/expenses/data/datasources/expense_local_datasource.dart';
-import 'package:track_expenses/featured/expenses/data/expense_model.dart';
+import 'package:nostra/core/constant/hive_constants.dart';
+import 'package:nostra/core/errors/exception.dart';
+import 'package:nostra/featured/expenses/data/datasources/expense_local_datasource.dart';
+import 'package:nostra/featured/expenses/data/expense_model.dart';
 
 class ExpenseLocalDatasourceImpl implements ExpenseLocalDataSource {
   Box<ExpenseModel> _getBox() {

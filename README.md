@@ -1,4 +1,4 @@
-# 💰 Track Expenses
+# 💰 Nostra
 
 <div align="center">
 
@@ -18,9 +18,10 @@ Una aplicación multiplataforma de gestión de gastos e ingresos construida con 
 ## 📸 Capturas de Pantalla
 
 <div align="center">
-  <img src="screenshots/home.png" width="250" alt="Pantalla Principal"/>
-  <img src="screenshots/add_expense.png" width="250" alt="Agregar Gasto"/>
-  <img src="screenshots/monthly_view.png" width="250" alt="Vista Mensual"/>
+  <img src="screenshots/welcome_screen.jpg" width="250" alt="Pantalla Principal"/>
+  <img src="screenshots/expense_screen.jpg" width="250" alt="Agregar Gasto"/>
+  <img src="screenshots/previous_month_screen.jpg" width="250" alt="Vista Mensual"/>
+  <img src="screenshots/home_widgets.jpg" width="250" alt="Widget de Inicio"/>
 </div>
 
 ## ✨ Características

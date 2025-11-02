@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:track_expenses/core/themes/app_color.dart';
+import 'package:nostra/core/themes/app_color.dart';
 
 class SnackBarHelper {
   static void showSuccess(BuildContext context, String message) {

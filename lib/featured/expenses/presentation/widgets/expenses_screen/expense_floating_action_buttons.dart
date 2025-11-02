@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:track_expenses/core/themes/app_color.dart';
-import 'package:track_expenses/featured/expenses/presentation/pages/previous_months_screen.dart';
+import 'package:nostra/core/themes/app_color.dart';
+import 'package:nostra/featured/expenses/presentation/pages/previous_months_screen.dart';
 
 class ExpenseFloatingActionButtons extends StatelessWidget {
   final VoidCallback onAddExpense;

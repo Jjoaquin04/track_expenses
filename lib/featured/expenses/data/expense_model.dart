@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:track_expenses/core/constant/hive_constants.dart';
-import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/core/constant/hive_constants.dart';
+import 'package:nostra/featured/expenses/domain/entity/expense.dart';
 part 'expense_model.g.dart';
 
 @HiveType(typeId: HiveConstants.expenseTypeId)

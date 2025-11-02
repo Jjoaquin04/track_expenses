@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:track_expenses/core/errors/exception.dart';
-import 'package:track_expenses/core/errors/failure.dart';
-import 'package:track_expenses/featured/expenses/data/datasources/expense_local_datasource.dart';
-import 'package:track_expenses/featured/expenses/data/expense_model.dart';
-import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
-import 'package:track_expenses/featured/expenses/domain/repository/expense_repository.dart';
+import 'package:nostra/core/errors/exception.dart';
+import 'package:nostra/core/errors/failure.dart';
+import 'package:nostra/featured/expenses/data/datasources/expense_local_datasource.dart';
+import 'package:nostra/featured/expenses/data/expense_model.dart';
+import 'package:nostra/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/featured/expenses/domain/repository/expense_repository.dart';
 
 /// Implementación concreta del repositorio
 /// Conecta la capa de dominio con la capa de datos

@@ -1,4 +1,4 @@
-import 'package:track_expenses/featured/expenses/data/expense_model.dart';
+import 'package:nostra/featured/expenses/data/expense_model.dart';
 
 abstract class ExpenseLocalDataSource {
   Future<String> addExpense(ExpenseModel expense);

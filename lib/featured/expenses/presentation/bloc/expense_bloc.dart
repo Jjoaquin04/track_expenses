@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:track_expenses/core/constant/hive_constants.dart';
-import 'package:track_expenses/core/usecases/usecase.dart';
-import 'package:track_expenses/featured/expenses/data/expense_model.dart';
-import 'package:track_expenses/featured/expenses/domain/usecases/add_expense.dart';
-import 'package:track_expenses/featured/expenses/domain/usecases/delete_expense.dart';
-import 'package:track_expenses/featured/expenses/domain/usecases/get_expenses.dart';
-import 'package:track_expenses/featured/expenses/domain/usecases/get_expenses_by_month.dart';
-import 'package:track_expenses/featured/expenses/domain/usecases/update_expense.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
-import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
+import 'package:nostra/core/constant/hive_constants.dart';
+import 'package:nostra/core/usecases/usecase.dart';
+import 'package:nostra/featured/expenses/data/expense_model.dart';
+import 'package:nostra/featured/expenses/domain/usecases/add_expense.dart';
+import 'package:nostra/featured/expenses/domain/usecases/delete_expense.dart';
+import 'package:nostra/featured/expenses/domain/usecases/get_expenses.dart';
+import 'package:nostra/featured/expenses/domain/usecases/get_expenses_by_month.dart';
+import 'package:nostra/featured/expenses/domain/usecases/update_expense.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_event.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_state.dart';
 
 class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   final GetExpenses getExpensesUseCase;
