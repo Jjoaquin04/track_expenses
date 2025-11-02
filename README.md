@@ -185,51 +185,18 @@ lib/
 | **Dartz** | Programación funcional (Either) |
 | **Home Widget** | Widget de pantalla de inicio |
 
-## 🤝 Contribuir
+## 🤝 Contribuir (Política de Contribución)
 
-¡Las contribuciones son bienvenidas! Aquí te explicamos cómo puedes ayudar:
+Este proyecto está liberado bajo la Licencia MIT, lo que significa que **tienes total libertad para usar, modificar y distribuir el código**.
 
-### 1. Fork del Proyecto
+* **USO Y MODIFICACIONES:** Te animamos a que hagas un 'fork' del proyecto para implementar cualquier característica o corrección de errores que desees para tu uso personal o para crear tu propia versión.
+* **CONTRIBUCIONES AL REPOSITORIO ORIGINAL:** Actualmente, el autor **no está aceptando Pull Requests (PRs)** que añadan nuevas funcionalidades o cambios de código.
 
-Haz un fork del repositorio en tu cuenta de GitHub.
+Si encuentras un error o tienes una idea (un **Issue**), por favor, ¡sigue reportándolo! Tu feedback es muy valioso:
+* [🐛 Reportar Bugs](#🐛-reportar-bugs)
+* [💡 Solicitar Funcionalidades](#💡-solicitar-funcionalidades)
 
-### 2. Crea una Rama
-
-```bash
-git checkout -b feature/nueva-funcionalidad
-```
-
-### 3. Realiza tus Cambios
-
-- Escribe código limpio y legible
-- Sigue las convenciones de Dart/Flutter
-- Añade comentarios cuando sea necesario
-- Asegúrate de que el código compila sin errores
-
-### 4. Commit de los Cambios
-
-```bash
-git commit -m "feat: añadir nueva funcionalidad"
-```
-
-**Tipos de commits:**
-- `feat`: Nueva funcionalidad
-- `fix`: Corrección de errores
-- `docs`: Cambios en documentación
-- `style`: Cambios de formato (no afectan la lógica)
-- `refactor`: Refactorización de código
-- `test`: Añadir o modificar tests
-- `chore`: Tareas de mantenimiento
-
-### 5. Push a tu Rama
-
-```bash
-git push origin feature/nueva-funcionalidad
-```
-
-### 6. Abre un Pull Request
-
-Ve a GitHub y abre un Pull Request describiendo tus cambios.
+Gracias por respetar esta política.
 
 ## 🐛 Reportar Bugs
 
