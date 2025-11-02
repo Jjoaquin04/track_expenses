@@ -1,4 +1,4 @@
-# 💰 Track Expenses
+# 💰 ExpenseFlow
 
 <div align="center">
 

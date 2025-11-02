@@ -1,5 +1,5 @@
-name: track_expenses
-description: "A new Flutter project."
+name: ExpenseFlow
+description: "Personal Finance App"
 publish_to: 'none'
 version: 0.1.0
 
