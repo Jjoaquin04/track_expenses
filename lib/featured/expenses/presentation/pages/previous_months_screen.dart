@@ -5,7 +5,6 @@ import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_event.dart';
 import 'package:track_expenses/featured/expenses/presentation/widgets/previous_months_screen/monthly_expenses_page_view.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
 
 class PreviousMonthsScreen extends StatefulWidget {
   const PreviousMonthsScreen({super.key});
@@ -74,8 +73,6 @@ class _PreviousMonthsScreenState extends State<PreviousMonthsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       backgroundColor: AppColor.background,
       appBar: AppBar(
@@ -89,9 +86,9 @@ class _PreviousMonthsScreenState extends State<PreviousMonthsScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColor.primary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          l10n.previousMonths,
-          style: const TextStyle(
+        title: const Text(
+          "Meses Anteriores",
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontFamily: "SEGOE_UI",
             color: AppColor.primary,

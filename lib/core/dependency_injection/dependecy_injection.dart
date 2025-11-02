@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:track_expenses/core/localization/locale_cubit.dart';
 import 'package:track_expenses/featured/expenses/data/datasources/expense_local_datasource.dart';
 import 'package:track_expenses/featured/expenses/data/datasources/expense_local_datasource_impl.dart';
 import 'package:track_expenses/featured/expenses/data/repositories/expense_repository_impl.dart';
@@ -44,7 +43,4 @@ void setUpDependencyInjection() {
       getExpensesByMonthUseCase: getIt(),
     ),
   );
-
-  // Locale Cubit (singleton for app-wide language state)
-  getIt.registerLazySingleton<LocaleCubit>(() => LocaleCubit());
 }

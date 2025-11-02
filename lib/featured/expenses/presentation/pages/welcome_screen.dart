@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:track_expenses/core/themes/app_color.dart';
 import 'package:track_expenses/core/utils/user_config.dart';
 import 'package:track_expenses/featured/expenses/presentation/pages/expenses_screen.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -46,8 +45,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       backgroundColor: AppColor.background,
       body: SingleChildScrollView(
@@ -74,9 +71,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const SizedBox(height: 40),
 
                   // Título
-                  Text(
-                    l10n.welcomeTitle,
-                    style: const TextStyle(
+                  const Text(
+                    '¡Bienvenido!',
+                    style: TextStyle(
                       fontFamily: 'SEGOE_UI',
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -88,7 +85,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                   // Subtítulo
                   Text(
-                    l10n.welcomeSubtitle,
+                    'Configura tu perfil para comenzar',
                     style: TextStyle(
                       fontFamily: 'SEGOE_UI',
                       fontSize: 16,
@@ -102,8 +99,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      labelText: l10n.yourName,
-                      hintText: l10n.yourNameHint,
+                      labelText: 'Tu nombre',
+                      hintText: 'Ej: Juan Pérez',
                       prefixIcon: const Icon(Icons.person_outline),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -113,7 +110,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return l10n.pleaseEnterName;
+                        return 'Por favor ingresa tu nombre';
                       }
                       return null;
                     },
@@ -127,8 +124,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       decimal: true,
                     ),
                     decoration: InputDecoration(
-                      labelText: l10n.initialBalance,
-                      hintText: l10n.initialBalanceHint,
+                      labelText: 'Balance inicial',
+                      hintText: 'Ej: 1000.00',
                       prefixIcon: const Icon(Icons.euro),
                       suffixText: '€',
                       border: OutlineInputBorder(
@@ -136,18 +133,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                       filled: true,
                       fillColor: Colors.white,
-                      helperText: l10n.initialBalanceHelper,
+                      helperText: 'Cantidad de dinero con la que comienzas',
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return l10n.pleaseEnterBalance;
+                        return 'Por favor ingresa un balance inicial';
                       }
                       final number = double.tryParse(value);
                       if (number == null) {
-                        return l10n.enterValidNumber;
+                        return 'Ingresa un número válido';
                       }
                       if (number < 0) {
-                        return l10n.balanceCannotBeNegative;
+                        return 'El balance no puede ser negativo';
                       }
                       return null;
                     },
@@ -166,9 +163,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                       elevation: 2,
                     ),
-                    child: Text(
-                      l10n.continueButton,
-                      style: const TextStyle(
+                    child: const Text(
+                      'Comenzar',
+                      style: TextStyle(
                         fontFamily: 'SEGOE_UI',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

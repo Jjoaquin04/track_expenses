@@ -5,8 +5,6 @@ import 'package:track_expenses/core/utils/user_config.dart';
 import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
-import 'package:track_expenses/featured/expenses/presentation/pages/language_settings_screen.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
 
 class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ExpenseAppBar({super.key});
@@ -16,8 +14,6 @@ class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return AppBar(
       backgroundColor: AppColor.background,
       shape: RoundedRectangleBorder(
@@ -32,7 +28,7 @@ class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                '${l10n.hello} $userName',
+                'Hola $userName',
                 style: const TextStyle(
                   color: AppColor.primary,
                   fontFamily: 'SEGOE_UI',
@@ -46,21 +42,7 @@ class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
-      actions: [
-        const _TotalBalanceWidget(),
-        IconButton(
-          icon: const Icon(Icons.translate_rounded, color: AppColor.primary),
-          tooltip: 'Idioma / Language',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const LanguageSettingsScreen(),
-              ),
-            );
-          },
-        ),
-      ],
+      actions: const [_TotalBalanceWidget()],
     );
   }
 }
@@ -91,36 +73,41 @@ class _TotalBalanceWidget extends StatelessWidget {
             final initialBalance = balanceSnapshot.data ?? 0.0;
             final currentBalance = initialBalance + totalIncome - totalExpenses;
 
-            final l10n = AppLocalizations.of(context)!;
-
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.total,
-                  style: const TextStyle(
-                    fontFamily: "SEGOE_UI",
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColor.secondary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Text(
-                      currentBalance.toStringAsFixed(2),
-                      style: const TextStyle(
-                        fontFamily: "SEGOE_UI",
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.primary,
-                      ),
+            return Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Total",
+                    style: TextStyle(
+                      fontFamily: "SEGOE_UI",
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColor.secondary,
                     ),
-                    Icon(Icons.euro_rounded, color: AppColor.primary, size: 18),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        currentBalance.toStringAsFixed(2),
+                        style: const TextStyle(
+                          fontFamily: "SEGOE_UI",
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.primary,
+                        ),
+                      ),
+                      Icon(
+                        Icons.euro_rounded,
+                        color: AppColor.primary,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             );
           },
         );

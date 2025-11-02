@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:track_expenses/core/constant/date_constants.dart';
 import 'package:track_expenses/core/themes/app_color.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
 
 class MonthCard extends StatelessWidget {
   final int month;
@@ -23,8 +22,6 @@ class MonthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Card(
       shadowColor: AppColor.primary,
       surfaceTintColor: AppColor.background,
@@ -41,7 +38,7 @@ class MonthCard extends StatelessWidget {
               // Mes y Año
               Center(
                 child: Text(
-                  "${getMonthName(month, l10n)} $year",
+                  "${getMonthName(month)} $year",
                   style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -57,13 +54,13 @@ class MonthCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TotalCard(
-                    label: l10n.expenses,
+                    label: 'Gastos',
                     amount: totalExpenses,
                     color: Colors.red,
                     icon: Icons.arrow_downward,
                   ),
                   TotalCard(
-                    label: l10n.income,
+                    label: 'Ingresos',
                     amount: totalIncome,
                     color: Colors.green,
                     icon: Icons.arrow_upward,
@@ -76,9 +73,9 @@ class MonthCard extends StatelessWidget {
               if (expensesByCategory.isNotEmpty) ...[
                 const Divider(thickness: 1.5),
                 const SizedBox(height: 16),
-                Text(
-                  l10n.expenses,
-                  style: const TextStyle(
+                const Text(
+                  'Gastos',
+                  style: TextStyle(
                     fontFamily: 'SEGOE_UI',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -100,9 +97,9 @@ class MonthCard extends StatelessWidget {
                 const SizedBox(height: 20),
                 const Divider(thickness: 1.5),
                 const SizedBox(height: 16),
-                Text(
-                  l10n.income,
-                  style: const TextStyle(
+                const Text(
+                  'Ingresos',
+                  style: TextStyle(
                     fontFamily: 'SEGOE_UI',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

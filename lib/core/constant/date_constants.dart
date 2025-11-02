@@ -1,32 +1,18 @@
-import 'package:track_expenses/l10n/app_localizations.dart';
+Map<int, String> monthNames = {
+  1: 'Enero',
+  2: 'Febrero',
+  3: 'Marzo',
+  4: 'Abril',
+  5: 'Mayo',
+  6: 'Junio',
+  7: 'Julio',
+  8: 'Agosto',
+  9: 'Septiembre',
+  10: 'Octubre',
+  11: 'Noviembre',
+  12: 'Diciembre',
+};
 
-String getMonthName(int month, AppLocalizations l10n) {
-  switch (month) {
-    case 1:
-      return l10n.january;
-    case 2:
-      return l10n.february;
-    case 3:
-      return l10n.march;
-    case 4:
-      return l10n.april;
-    case 5:
-      return l10n.may;
-    case 6:
-      return l10n.june;
-    case 7:
-      return l10n.july;
-    case 8:
-      return l10n.august;
-    case 9:
-      return l10n.september;
-    case 10:
-      return l10n.october;
-    case 11:
-      return l10n.november;
-    case 12:
-      return l10n.december;
-    default:
-      return '';
-  }
+String getMonthName(int month) {
+  return monthNames[month] ?? '';
 }

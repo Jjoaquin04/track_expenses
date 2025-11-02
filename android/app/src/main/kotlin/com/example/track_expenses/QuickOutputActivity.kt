@@ -60,7 +60,7 @@ class QuickOutputActivity : Activity() {
         isFixed: Boolean
     ) {
         if (name.isBlank() || amount.isBlank()) {
-            Toast.makeText(this, getString(R.string.fields_required), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Nombre y cantidad son obligatorios", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -97,10 +97,10 @@ class QuickOutputActivity : Activity() {
             }
             sendBroadcast(intent)
 
-            Toast.makeText(this, getString(R.string.expense_saved), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Gasto guardado", Toast.LENGTH_SHORT).show()
 
         } catch (e: Exception) {
-            Toast.makeText(this, getString(R.string.save_error), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error al guardar", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
         }
         

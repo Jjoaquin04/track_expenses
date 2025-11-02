@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:track_expenses/featured/expenses/presentation/bloc/expense_state.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
 
 class SummaryCardsWidget extends StatelessWidget {
   const SummaryCardsWidget({super.key});
@@ -25,18 +24,13 @@ class SummaryCardsWidget extends StatelessWidget {
               .fold(0.0, (sum, expense) => sum + expense.amount);
         }
 
-        final l10n = AppLocalizations.of(context)!;
-
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 20.0,
-              ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
               child: Text(
-                l10n.personalMovementTracking,
-                style: const TextStyle(
+                "Seguimiento de Movimientos Personales",
+                style: TextStyle(
                   fontFamily: "SEGOE_UI",
                   fontSize: 35,
                   fontWeight: FontWeight.w900,
@@ -49,14 +43,14 @@ class SummaryCardsWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _SummaryCard(
-                    label: l10n.expenses,
+                    label: "Gastos",
                     amount: totalExpenses,
                     icon: Icons.arrow_downward,
                     color: Colors.red,
                     isExpense: true,
                   ),
                   _SummaryCard(
-                    label: l10n.income,
+                    label: "Ingresos",
                     amount: totalIncome,
                     icon: Icons.arrow_upward,
                     color: Colors.green,

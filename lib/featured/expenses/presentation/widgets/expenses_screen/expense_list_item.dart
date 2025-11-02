@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:track_expenses/core/themes/app_color.dart';
 import 'package:track_expenses/featured/expenses/domain/entity/expense.dart';
-import 'package:track_expenses/l10n/app_localizations.dart';
 
 class ExpenseListItem extends StatelessWidget {
   final Expense expense;
@@ -21,8 +20,6 @@ class ExpenseListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return GestureDetector(
       onLongPress: onLongPress,
       onTap: onTap,
@@ -92,10 +89,10 @@ class ExpenseListItem extends StatelessWidget {
                                         color: AppColor.primary,
                                       ),
                                       const SizedBox(width: 8),
-                                      Expanded(
+                                      const Expanded(
                                         child: Text(
-                                          l10n.fixedTransactionInfo,
-                                          style: const TextStyle(
+                                          "Información de movimiento fijo",
+                                          style: TextStyle(
                                             fontFamily: "SEGOE_UI",
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -107,9 +104,11 @@ class ExpenseListItem extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       const SizedBox(height: 12),
-                                      Text(
-                                        l10n.fixedTransactionDescription,
-                                        style: const TextStyle(
+                                      const Text(
+                                        "Este gasto está marcado como fijo. "
+                                        "Los movimientos fijos son aquellos que se repiten "
+                                        "mensualmente, es decir, se añaden automáticamente.",
+                                        style: TextStyle(
                                           fontFamily: "SEGOE_UI",
                                           fontSize: 18,
                                           color: Colors.black87,
