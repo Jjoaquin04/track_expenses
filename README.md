@@ -185,36 +185,18 @@ lib/
 | **Dartz** | Programación funcional (Either) |
 | **Home Widget** | Widget de pantalla de inicio |
 
-## 🤝 Contribuir (Política de Contribución)
+## 🤝 Contribuir (Política de Proyecto Estático)
 
-Este proyecto está liberado bajo la Licencia MIT, lo que significa que **tienes total libertad para usar, modificar y distribuir el código**.
+Este proyecto está liberado bajo la **Licencia MIT**, lo que significa que tienes **total libertad para hacer un 'fork' (copia), usar, modificar y distribuir el código** para tu propio uso.
 
-* **USO Y MODIFICACIONES:** Te animamos a que hagas un 'fork' del proyecto para implementar cualquier característica o corrección de errores que desees para tu uso personal o para crear tu propia versión.
-* **CONTRIBUCIONES AL REPOSITORIO ORIGINAL:** Actualmente, el autor **no está aceptando Pull Requests (PRs)** que añadan nuevas funcionalidades o cambios de código.
+**IMPORTANTE: Este repositorio original no está aceptando Pull Requests ni se ofrece soporte activo de mantenimiento por parte del autor.**
 
-Si encuentras un error o tienes una idea (un **Issue**), por favor, ¡sigue reportándolo! Tu feedback es muy valioso:
-* [🐛 Reportar Bugs](#🐛-reportar-bugs)
-* [💡 Solicitar Funcionalidades](#💡-solicitar-funcionalidades)
+Si deseas mejorar, corregir un bug o añadir funcionalidades:
+1.  Haz un **Fork** del proyecto.
+2.  Realiza tus cambios en tu propio repositorio (el 'fork').
+3.  Recomendamos crear 'Issues' en tu propio fork o en el repositorio original solo para dejar constancia de los bugs o ideas, pero **el autor original no garantiza una respuesta ni una implementación**.
 
-Gracias por respetar esta política.
-
-## 🐛 Reportar Bugs
-
-Si encuentras un bug, por favor abre un [issue](https://github.com/Jjoaquin04/track_expenses/issues) con:
-
-- **Descripción clara** del problema
-- **Pasos para reproducir** el bug
-- **Comportamiento esperado** vs comportamiento actual
-- **Capturas de pantalla** si es aplicable
-- **Información del dispositivo** (OS, versión de Flutter, etc.)
-
-## 💡 Solicitar Funcionalidades
-
-¿Tienes una idea para mejorar la app? Abre un [issue](https://github.com/Jjoaquin04/track_expenses/issues) con:
-
-- **Descripción detallada** de la funcionalidad
-- **Casos de uso** o ejemplos
-- **Mockups** o bocetos si es posible
+Si necesitas ayuda para la implementación, el autor sugiere buscar asistencia en la comunidad de Flutter. ¡Gracias por usar el código!
 
 ## 📋 Roadmap
 
