@@ -59,15 +59,18 @@ class ExpenseListItem extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        expense.nameExpense,
-                        style: const TextStyle(
-                          fontFamily: "SEGOE_UI",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.black87,
+                      Expanded(
+                        child: Text(
+                          expense.nameExpense,
+                          style: const TextStyle(
+                            fontFamily: "SEGOE_UI",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
                       ),
                       if (expense.fixedExpense == 1) ...[
                         const SizedBox(width: 8),
