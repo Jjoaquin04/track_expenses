@@ -89,9 +89,10 @@ void backgroundCallback(Uri? uri) async {
 }
 
 void main() async {
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // 1. Inicialización estándar
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // 2. Registrar el callback de HomeWidget (MODIFICADO)
   HomeWidget.registerInteractivityCallback(backgroundCallback);
