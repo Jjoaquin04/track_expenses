@@ -1,6 +1,9 @@
 import 'package:dartz/dartz.dart';
+import 'package:hive/hive.dart';
+import 'package:nostra/core/constant/hive_constants.dart';
 import 'package:nostra/core/errors/exception.dart';
 import 'package:nostra/core/errors/failure.dart';
+import 'package:nostra/core/utils/expense_change_history_helper.dart';
 import 'package:nostra/featured/expenses/data/datasources/expense_local_datasource.dart';
 import 'package:nostra/featured/expenses/data/expense_model.dart';
 import 'package:nostra/featured/expenses/domain/entity/expense.dart';
@@ -85,9 +88,24 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
         return const Left(ValidationFailure('ID de gasto inválido'));
       }
 
+      // Obtener el gasto anterior para comparar (si es gasto fijo)
+      final box = await Hive.openBox<ExpenseModel>(HiveConstants.expenseBox);
+      final oldModel = box.get(index);
+
       // Convertir a modelo y actualizar
-      final model = ExpenseModel.fromEntity(expense);
-      await localDataSource.updateExpense(expense.id!, model);
+      final newModel = ExpenseModel.fromEntity(expense);
+
+      // Si el gasto anterior era fijo, registrar el cambio en el historial
+      if (oldModel != null && oldModel.fixedExpense == 1) {
+        await ExpenseChangeHistoryHelper.recordEdit(
+          expense.id!,
+          oldModel,
+          newModel,
+        );
+      } else {
+        // Si no era fijo, simplemente actualizar
+        await localDataSource.updateExpense(expense.id!, newModel);
+      }
 
       return const Right(null);
     } on CacheException catch (e) {

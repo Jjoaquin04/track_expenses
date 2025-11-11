@@ -24,13 +24,14 @@ class ExpenseModelAdapter extends TypeAdapter<ExpenseModel> {
       date: fields[4] as DateTime,
       type: fields[5] as int,
       fixedExpense: fields[6] as int,
+      changeHistory: (fields[7] as List?)?.cast<ExpenseChangeHistory>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ExpenseModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.expenseOwner)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class ExpenseModelAdapter extends TypeAdapter<ExpenseModel> {
       ..writeByte(5)
       ..write(obj.type)
       ..writeByte(6)
-      ..write(obj.fixedExpense);
+      ..write(obj.fixedExpense)
+      ..writeByte(7)
+      ..write(obj.changeHistory);
   }
 
   @override

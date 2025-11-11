@@ -280,6 +280,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'This expense is marked as fixed. Fixed transactions are those that repeat monthly, meaning they are added automatically.';
 
   @override
+  String get unpinFixedExpense => 'Deactivate Fixed Expense';
+
+  @override
+  String unpinFixedExpenseQuestion(String name) {
+    return 'Do you want to convert \"$name\" into a non-fixed expense?';
+  }
+
+  @override
+  String get unpinFixedExpenseWarning =>
+      'This transaction will no longer appear automatically in future months.';
+
+  @override
+  String get deactivate => 'Deactivate';
+
+  @override
+  String get expenseConvertedToNonFixed => 'Expense converted to non-fixed';
+
+  @override
+  String get errorDeactivatingFixedExpense =>
+      'Error deactivating fixed expense';
+
+  @override
   String get startAddingTransactions =>
       'Start by adding a new expense or income';
 

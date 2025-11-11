@@ -120,6 +120,20 @@
   "fixedTransactionInfo": "Fixed Transaction Information",
   "fixedTransactionDescription": "This expense is marked as fixed. Fixed transactions are those that repeat monthly, meaning they are added automatically.",
   
+  "unpinFixedExpense": "Deactivate Fixed Expense",
+  "unpinFixedExpenseQuestion": "Do you want to convert \"{name}\" into a non-fixed expense?",
+  "@unpinFixedExpenseQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unpinFixedExpenseWarning": "This transaction will no longer appear automatically in future months.",
+  "deactivate": "Deactivate",
+  "expenseConvertedToNonFixed": "Expense converted to non-fixed",
+  "errorDeactivatingFixedExpense": "Error deactivating fixed expense",
+  
   "startAddingTransactions": "Start by adding a new expense or income",
   "noTransactionsRecorded": "No transactions recorded",
   "unknownState": "Unknown state"

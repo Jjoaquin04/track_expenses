@@ -12,6 +12,7 @@ import 'package:nostra/core/dependency_injection/dependecy_injection.dart';
 import 'package:nostra/core/localization/locale_cubit.dart';
 import 'package:nostra/core/utils/user_config.dart';
 import 'package:nostra/featured/expenses/data/expense_model.dart';
+import 'package:nostra/featured/expenses/data/expense_change_history.dart';
 import 'package:nostra/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:nostra/featured/expenses/presentation/pages/expenses_screen.dart';
 import 'package:nostra/featured/expenses/presentation/pages/welcome_screen.dart';
@@ -38,6 +39,8 @@ void backgroundCallback(Uri? uri) async {
         await Hive.initFlutter();
         if (!Hive.isAdapterRegistered(ExpenseModelAdapter().typeId)) {
           Hive.registerAdapter(ExpenseModelAdapter());
+          Hive.registerAdapter(ExpenseChangeHistoryAdapter());
+          Hive.registerAdapter(ChangeTypeAdapter());
         }
 
         final expenseBox = await Hive.openBox<ExpenseModel>(
@@ -96,6 +99,8 @@ void main() async {
   // 3. Inicialización de Hive para la app principal
   await Hive.initFlutter();
   Hive.registerAdapter(ExpenseModelAdapter());
+  Hive.registerAdapter(ExpenseChangeHistoryAdapter());
+  Hive.registerAdapter(ChangeTypeAdapter());
   await Hive.openBox<ExpenseModel>(HiveConstants.expenseBox);
   await Hive.openBox('user_config');
 

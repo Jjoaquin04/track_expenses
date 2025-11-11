@@ -626,6 +626,42 @@ abstract class AppLocalizations {
   /// **'This expense is marked as fixed. Fixed transactions are those that repeat monthly, meaning they are added automatically.'**
   String get fixedTransactionDescription;
 
+  /// No description provided for @unpinFixedExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate Fixed Expense'**
+  String get unpinFixedExpense;
+
+  /// No description provided for @unpinFixedExpenseQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to convert \"{name}\" into a non-fixed expense?'**
+  String unpinFixedExpenseQuestion(String name);
+
+  /// No description provided for @unpinFixedExpenseWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This transaction will no longer appear automatically in future months.'**
+  String get unpinFixedExpenseWarning;
+
+  /// No description provided for @deactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get deactivate;
+
+  /// No description provided for @expenseConvertedToNonFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense converted to non-fixed'**
+  String get expenseConvertedToNonFixed;
+
+  /// No description provided for @errorDeactivatingFixedExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deactivating fixed expense'**
+  String get errorDeactivatingFixedExpense;
+
   /// No description provided for @startAddingTransactions.
   ///
   /// In en, this message translates to:

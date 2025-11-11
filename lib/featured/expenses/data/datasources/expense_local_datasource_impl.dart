@@ -76,27 +76,24 @@ class ExpenseLocalDatasourceImpl implements ExpenseLocalDataSource {
   Map<String, ExpenseModel> getExpensesByMonth(DateTime time) {
     try {
       final box = _getBox();
-      // Crear fecha de inicio del mes
-      final startOfMonth = DateTime(time.year, time.month, 1);
-      return box
-          .toMap()
-          .map((key, value) => MapEntry(key.toString(), value))
-          .entries
-          .where(
-            (entry) =>
-                // Gastos del mes actual
-                (entry.value.date.year == time.year &&
-                    entry.value.date.month == time.month) ||
-                // Gastos fijos de meses anteriores
-                (entry.value.fixedExpense == 1 &&
-                    entry.value.date.isBefore(startOfMonth)),
-          )
-          .fold<Map<String, ExpenseModel>>(
-            {},
-            (map, entry) => map..[entry.key] = entry.value,
-          );
+      final Map<String, ExpenseModel> result = {};
+
+      for (var entry in box.toMap().entries) {
+        final key = entry.key.toString();
+        final expense = entry.value;
+
+        // Obtener el estado del gasto en la fecha consultada
+        final stateAtDate = expense.getStateAtDate(time);
+
+        // Si el gasto existía en ese mes, agregarlo
+        if (stateAtDate != null) {
+          result[key] = stateAtDate;
+        }
+      }
+
+      return result;
     } catch (e) {
-      throw CacheException("Error al obtener los gastos de este mes");
+      throw CacheException("Error al obtener los gastos de este mes: $e");
     }
   }
 }

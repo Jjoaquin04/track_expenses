@@ -31,6 +31,8 @@ class _PreviousMonthsScreenState extends State<PreviousMonthsScreen> {
   }
 
   // Función que agrupa gastos por mes y categoría
+  // NOTA: El datasource ahora maneja los gastos fijos con snapshots
+  // Esta función solo agrupa los gastos que ya vienen filtrados por mes
   Map<String, Map<String, dynamic>> _groupExpensesByMonth(
     List<Expense> expenses,
   ) {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nostra/core/themes/app_color.dart';
 import 'package:nostra/featured/expenses/domain/entity/expense.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_bloc.dart';
+import 'package:nostra/featured/expenses/presentation/bloc/expense_event.dart';
 import 'package:nostra/l10n/app_localizations.dart';
 
 class ExpenseListItem extends StatelessWidget {
@@ -75,56 +78,8 @@ class ExpenseListItem extends StatelessWidget {
                       if (expense.fixedExpense == 1) ...[
                         const SizedBox(width: 8),
                         GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    side: BorderSide(
-                                      color: AppColor.primary,
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                  title: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.info_outline_rounded,
-                                        size: 30,
-                                        color: AppColor.primary,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          l10n.fixedTransactionInfo,
-                                          style: const TextStyle(
-                                            fontFamily: "SEGOE_UI",
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        l10n.fixedTransactionDescription,
-                                        style: const TextStyle(
-                                          fontFamily: "SEGOE_UI",
-                                          fontSize: 18,
-                                          color: Colors.black87,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                          onDoubleTap: () => _showUnpinDialog(context, l10n),
+                          onTap: () => _showInfoDialog(context, l10n),
                           child: const Icon(
                             Icons.push_pin,
                             size: 16,
@@ -143,6 +98,257 @@ class ExpenseListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Muestra el diálogo de información sobre gastos fijos
+  void _showInfoDialog(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            side: const BorderSide(color: AppColor.primary, width: 2.0),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.info_outline_rounded,
+                size: 30,
+                color: AppColor.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.fixedTransactionInfo,
+                  style: const TextStyle(
+                    fontFamily: "SEGOE_UI",
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Text(
+                l10n.fixedTransactionDescription,
+                style: const TextStyle(
+                  fontFamily: "SEGOE_UI",
+                  fontSize: 18,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.start,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontFamily: "SEGOE_UI",
+                  fontWeight: FontWeight.bold,
+                  color: AppColor.primary,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Muestra el diálogo para convertir un gasto fijo en no fijo
+  void _showUnpinDialog(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            side: const BorderSide(color: AppColor.primary, width: 2.0),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.push_pin_outlined,
+                size: 30,
+                color: AppColor.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.unpinFixedExpense,
+                  style: const TextStyle(
+                    fontFamily: "SEGOE_UI",
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.unpinFixedExpenseQuestion(expense.nameExpense),
+                style: const TextStyle(
+                  fontFamily: "SEGOE_UI",
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withValues(alpha: 01),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.orange.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.orange,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.unpinFixedExpenseWarning,
+                        style: TextStyle(
+                          fontFamily: "SEGOE_UI",
+                          fontSize: 13,
+                          color: Colors.orange[900],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                l10n.cancel,
+                style: const TextStyle(
+                  fontFamily: "SEGOE_UI",
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                await _unpinExpense(context, l10n);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                l10n.deactivate,
+                style: const TextStyle(
+                  fontFamily: "SEGOE_UI",
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Convierte el gasto fijo en no fijo
+  Future<void> _unpinExpense(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    try {
+      // Actualizar el gasto en el Bloc
+      final updatedExpense = Expense(
+        id: expense.id,
+        ownerExpense: expense.ownerExpense,
+        nameExpense: expense.nameExpense,
+        amount: expense.amount,
+        category: expense.category,
+        date: expense.date,
+        type: expense.type,
+        fixedExpense: 0, // No fijo
+        changeHistory: expense.changeHistory,
+      );
+
+      if (context.mounted) {
+        context.read<ExpenseBloc>().add(
+          UpdateExpenseEvent(expense: updatedExpense),
+        );
+
+        // Mostrar confirmación
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.expenseConvertedToNonFixed,
+                    style: const TextStyle(
+                      fontFamily: "SEGOE_UI",
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${l10n.errorDeactivatingFixedExpense}: $e',
+                    style: const TextStyle(fontFamily: "SEGOE_UI"),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
+    }
   }
 }
 

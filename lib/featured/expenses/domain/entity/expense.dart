@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:nostra/featured/expenses/data/expense_change_history.dart';
 
 // Enum para diferenciar entre gasto e ingreso
 enum TransactionType {
@@ -15,6 +16,7 @@ class Expense extends Equatable {
   final DateTime date;
   final TransactionType type;
   final int fixedExpense;
+  final List<ExpenseChangeHistory>? changeHistory;
 
   const Expense({
     this.id,
@@ -25,6 +27,7 @@ class Expense extends Equatable {
     required this.date,
     required this.type,
     required this.fixedExpense,
+    this.changeHistory,
   });
 
   @override
@@ -37,5 +40,6 @@ class Expense extends Equatable {
     date,
     type,
     fixedExpense,
+    changeHistory,
   ];
 }

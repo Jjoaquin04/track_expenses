@@ -117,7 +117,21 @@
   
   "personalMovementTracking": "Seguimiento de Movimientos Personales",
   "fixedTransactionInfo": "Información de movimiento fijo",
-  "fixedTransactionDescription": "Este gasto está marcado como fijo. Los movimientos fijos son aquellos que se repiten mensualmente, es decir, se añaden automáticamente.",
+  "fixedTransactionDescription": "Este movimiento está marcado como fijo. Los movimientos fijos son aquellos que se repiten mensualmente, es decir, se añaden automáticamente.",
+  
+  "unpinFixedExpense": "Desactivar gasto fijo",
+  "unpinFixedExpenseQuestion": "¿Deseas convertir \"{name}\" en un gasto no fijo?",
+  "@unpinFixedExpenseQuestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unpinFixedExpenseWarning": "Este movimiento dejará de aparecer automáticamente en meses futuros.",
+  "deactivate": "Desactivar",
+  "expenseConvertedToNonFixed": "Gasto convertido a no fijo",
+  "errorDeactivatingFixedExpense": "Error al desactivar el gasto fijo",
   
   "startAddingTransactions": "Comienza añadiendo un nuevo gasto o ingreso",
   "noTransactionsRecorded": "No hay movimientos registrados",

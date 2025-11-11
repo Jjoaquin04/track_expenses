@@ -279,7 +279,29 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get fixedTransactionDescription =>
-      'Este gasto está marcado como fijo. Los movimientos fijos son aquellos que se repiten mensualmente, es decir, se añaden automáticamente.';
+      'Este movimiento está marcado como fijo. Los movimientos fijos son aquellos que se repiten mensualmente, es decir, se añaden automáticamente.';
+
+  @override
+  String get unpinFixedExpense => 'Desactivar gasto fijo';
+
+  @override
+  String unpinFixedExpenseQuestion(String name) {
+    return '¿Deseas convertir \"$name\" en un gasto no fijo?';
+  }
+
+  @override
+  String get unpinFixedExpenseWarning =>
+      'Este movimiento dejará de aparecer automáticamente en meses futuros.';
+
+  @override
+  String get deactivate => 'Desactivar';
+
+  @override
+  String get expenseConvertedToNonFixed => 'Gasto convertido a no fijo';
+
+  @override
+  String get errorDeactivatingFixedExpense =>
+      'Error al desactivar el gasto fijo';
 
   @override
   String get startAddingTransactions =>
