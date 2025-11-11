@@ -89,7 +89,7 @@ void backgroundCallback(Uri? uri) async {
 }
 
 void main() async {
-  DeviceOrientation.portraitUp;
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // 1. Inicialización estándar
   WidgetsFlutterBinding.ensureInitialized();
 
