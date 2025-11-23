@@ -174,15 +174,18 @@ class TotalCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
-                  child: Text(
-                    amount.toStringAsFixed(2),
-                    style: TextStyle(
-                      fontFamily: 'SEGOE_UI',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: color,
+                  child: Tooltip(
+                    message: amount.toStringAsFixed(2),
+                    child: Text(
+                      amount.toStringAsFixed(2),
+                      style: TextStyle(
+                        fontFamily: 'SEGOE_UI',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Icon(Icons.euro_rounded, color: color, size: 18),

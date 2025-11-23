@@ -416,7 +416,7 @@ class _AmountText extends StatelessWidget {
         Text(
           isExpense
               ? "-${amount.toStringAsFixed(2)}"
-              : "\$${amount.toStringAsFixed(2)}",
+              : amount.toStringAsFixed(2),
           style: const TextStyle(
             fontFamily: "SEGOE_UI",
             fontSize: 18,
