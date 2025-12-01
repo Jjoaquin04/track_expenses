@@ -25,13 +25,22 @@ class UserConfig {
 
   /// Obtiene el nombre del usuario
   static Future<String> getUserName() async {
-    final box = await Hive.openBox(_boxName);
+    final box = await _openBox();
     return box.get(_nameKey, defaultValue: 'Usuario');
   }
 
   /// Obtiene el balance inicial del usuario
   static Future<double> getInitialBalance() async {
-    final box = await Hive.openBox(_boxName);
+    final box = await _openBox();
     return box.get(_initialBalanceKey, defaultValue: 0.0);
+  }
+
+  static Future<void> updateInitialBalance(double newBalance) async {
+    final box = await _openBox();
+    await box.put(_initialBalanceKey, newBalance);
+  }
+
+  static Future<Box> _openBox() async {
+    return await Hive.openBox(_boxName);
   }
 }

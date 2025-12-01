@@ -2,17 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nostra/core/themes/app_color.dart';
 import 'package:nostra/core/utils/user_config.dart';
-import 'package:nostra/featured/expenses/domain/entity/expense.dart';
 import 'package:nostra/featured/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:nostra/featured/expenses/presentation/bloc/expense_state.dart';
 import 'package:nostra/featured/expenses/presentation/pages/language_settings_screen.dart';
 import 'package:nostra/l10n/app_localizations.dart';
 
-class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
+class ExpenseAppBar extends StatefulWidget implements PreferredSizeWidget {
   const ExpenseAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  State<ExpenseAppBar> createState() => _ExpenseAppBarState();
+}
+
+class _ExpenseAppBarState extends State<ExpenseAppBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _waveController;
+  late Animation<double> _waveAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _waveController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _waveAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 0.0, end: 0.3), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: 0.3, end: -0.3), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: -0.3, end: 0.3), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: 0.3, end: -0.3), weight: 1),
+          TweenSequenceItem(tween: Tween(begin: -0.3, end: 0.0), weight: 1),
+        ]).animate(
+          CurvedAnimation(parent: _waveController, curve: Curves.easeInOut),
+        );
+  }
+
+  @override
+  void dispose() {
+    _waveController.dispose();
+    super.dispose();
+  }
+
+  void _playWaveAnimation() {
+    _waveController.reset();
+    _waveController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +59,12 @@ class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       backgroundColor: AppColor.background,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColor.primary, width: 2.5),
-      ),
+      surfaceTintColor: Colors.transparent, // Evita el tinte grisáceo
+      elevation: 8.0, // Añade sombreado
+      shadowColor: AppColor.primary.withValues(
+        alpha: 0.8,
+      ), // Color de la sombra
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: FutureBuilder<String>(
         future: UserConfig.getUserName(),
         builder: (context, snapshot) {
@@ -41,7 +82,22 @@ class ExpenseAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               const SizedBox(width: 12.0),
-              const Icon(Icons.waving_hand_outlined, color: AppColor.primary),
+              GestureDetector(
+                onTap: _playWaveAnimation,
+                child: AnimatedBuilder(
+                  animation: _waveAnimation,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _waveAnimation.value,
+                      child: child,
+                    );
+                  },
+                  child: const Icon(
+                    Icons.waving_hand_outlined,
+                    color: AppColor.primary,
+                  ),
+                ),
+              ),
             ],
           );
         },
@@ -72,24 +128,10 @@ class _TotalBalanceWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(
       builder: (context, state) {
-        double totalExpenses = 0.0;
-        double totalIncome = 0.0;
-
-        if (state is ExpenseLoaded && state.expenses.isNotEmpty) {
-          totalExpenses = state.expenses
-              .where((e) => e.type == TransactionType.expense)
-              .fold(0.0, (sum, expense) => sum + expense.amount);
-
-          totalIncome = state.expenses
-              .where((e) => e.type == TransactionType.income)
-              .fold(0.0, (sum, expense) => sum + expense.amount);
-        }
-
         return FutureBuilder<double>(
           future: UserConfig.getInitialBalance(),
           builder: (context, balanceSnapshot) {
             final initialBalance = balanceSnapshot.data ?? 0.0;
-            final currentBalance = initialBalance + totalIncome - totalExpenses;
 
             final l10n = AppLocalizations.of(context)!;
 
@@ -109,7 +151,7 @@ class _TotalBalanceWidget extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      currentBalance.toStringAsFixed(2),
+                      initialBalance.toStringAsFixed(2),
                       style: const TextStyle(
                         fontFamily: "SEGOE_UI",
                         fontSize: 18,

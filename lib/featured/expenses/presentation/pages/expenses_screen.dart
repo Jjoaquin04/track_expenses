@@ -89,6 +89,7 @@ class ExpensesScreenState extends State<ExpensesScreen> {
           ),
         );
       }
+      // La actualización del balance se hace automáticamente en el repositorio
     } catch (e) {
       return;
     }

@@ -4,6 +4,7 @@ import 'package:nostra/core/constant/hive_constants.dart';
 import 'package:nostra/core/errors/exception.dart';
 import 'package:nostra/core/errors/failure.dart';
 import 'package:nostra/core/utils/expense_change_history_helper.dart';
+import 'package:nostra/core/utils/user_config.dart';
 import 'package:nostra/featured/expenses/data/datasources/expense_local_datasource.dart';
 import 'package:nostra/featured/expenses/data/expense_model.dart';
 import 'package:nostra/featured/expenses/domain/entity/expense.dart';
@@ -41,6 +42,14 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
       // Guardar en el DataSource y obtener la key
       final key = await localDataSource.addExpense(model);
+
+      // Actualizar el balance: sumar si es ingreso, restar si es gasto
+      final currentBalance = await UserConfig.getInitialBalance();
+      final newBalance = type == TransactionType.income
+          ? currentBalance +
+                amount // Añadir ingreso
+          : currentBalance - amount; // Restar gasto
+      await UserConfig.updateInitialBalance(newBalance);
 
       // Retornar la entidad creada con ID
       final entity = model.toEntity(id: key);
@@ -127,6 +136,16 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
       // Convertir ID string a int (no es necesario, ahora usamos String directamente)
       await localDataSource.deleteExpense(expense.id!);
+
+      // Actualizar el balance: restar si es gasto, sumar si es ingreso
+      final currentBalance = await UserConfig.getInitialBalance();
+      final newBalance = expense.type == TransactionType.expense
+          ? currentBalance +
+                expense
+                    .amount // Devolver el dinero del gasto
+          : currentBalance - expense.amount; // Quitar el ingreso
+      await UserConfig.updateInitialBalance(newBalance);
+
       return const Right(null);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));

@@ -24,13 +24,19 @@ class MonthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
     return Card(
-      shadowColor: AppColor.primary,
-      surfaceTintColor: AppColor.background,
+      color: AppColor.background.withValues(alpha: 0.95),
+      surfaceTintColor: Colors.transparent, // Evita el tinte grisáceo
+      elevation: 8.0, // Añade sombreado
+      shadowColor: AppColor.primary.withValues(
+        alpha: 0.8,
+      ), // Color de la sombra
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColor.primary, width: 2.5),
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: AppColor.primary.withValues(alpha: 0.7),
+          width: 2.5,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),

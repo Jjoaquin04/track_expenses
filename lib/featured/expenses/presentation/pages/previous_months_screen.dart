@@ -83,10 +83,12 @@ class _PreviousMonthsScreenState extends State<PreviousMonthsScreen> {
       appBar: AppBar(
         backgroundColor: AppColor.background,
         centerTitle: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: AppColor.primary, width: 2.5),
-        ),
+        surfaceTintColor: Colors.transparent, // Evita el tinte grisáceo
+        elevation: 8.0, // Añade sombreado
+        shadowColor: AppColor.primary.withValues(
+          alpha: 0.8,
+        ), // Color de la sombra
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColor.primary),
           onPressed: () => Navigator.pop(context),

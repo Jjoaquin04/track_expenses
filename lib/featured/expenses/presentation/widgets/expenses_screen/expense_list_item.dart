@@ -63,27 +63,33 @@ class ExpenseListItem extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          expense.nameExpense,
-                          style: const TextStyle(
-                            fontFamily: "SEGOE_UI",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.black87,
+                        child: Tooltip(
+                          message: expense.nameExpense,
+                          child: Text(
+                            expense.nameExpense,
+                            style: const TextStyle(
+                              fontFamily: "SEGOE_UI",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (expense.fixedExpense == 1) ...[
                         const SizedBox(width: 8),
-                        GestureDetector(
-                          onDoubleTap: () => _showUnpinDialog(context, l10n),
-                          onTap: () => _showInfoDialog(context, l10n),
-                          child: const Icon(
-                            Icons.push_pin,
-                            size: 16,
-                            color: AppColor.primary,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                            onLongPress: () => _showUnpinDialog(context, l10n),
+                            onTap: () => _showInfoDialog(context, l10n),
+                            child: const Icon(
+                              Icons.push_pin,
+                              size: 18,
+                              color: AppColor.primary,
+                            ),
                           ),
                         ),
                       ],

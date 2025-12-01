@@ -78,6 +78,11 @@ void backgroundCallback(Uri? uri) async {
         await expenseBox.add(model);
 
         await expenseBox.close();
+
+        await UserConfig.updateInitialBalance(
+          await UserConfig.getInitialBalance() +
+              (typeStr == "income" ? amount : -amount),
+        );
         await userConfigBox.close();
 
         await HomeWidget.saveWidgetData<String>('expense_data', null);

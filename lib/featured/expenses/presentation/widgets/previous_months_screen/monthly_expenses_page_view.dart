@@ -69,41 +69,44 @@ class MonthlyExpensesPageView extends StatelessWidget {
           );
         }
 
-        return SizedBox(
-          height: double.infinity,
-          child: PageView.builder(
-            itemCount: sortedMonthKeys.length,
-            controller: controller,
-            itemBuilder: (context, index) {
-              final monthKey = sortedMonthKeys[index];
-              final data = monthlyData[monthKey]!;
+        return Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: SizedBox(
+            height: double.infinity,
+            child: PageView.builder(
+              itemCount: sortedMonthKeys.length,
+              controller: controller,
+              itemBuilder: (context, index) {
+                final monthKey = sortedMonthKeys[index];
+                final data = monthlyData[monthKey]!;
 
-              return ListenableBuilder(
-                listenable: controller,
-                builder: (context, child) {
-                  double factor = 1;
-                  if (controller.position.hasContentDimensions) {
-                    factor = 1 - (controller.page! - index).abs();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Center(
-                      child: SizedBox(
-                        height: 700 + (factor * 30),
-                        child: MonthCard(
-                          month: data['month'],
-                          year: data['year'],
-                          totalExpenses: data['totalExpenses'],
-                          totalIncome: data['totalIncome'],
-                          expensesByCategory: data['expensesByCategory'],
-                          incomesByCategory: data['incomesByCategory'],
+                return ListenableBuilder(
+                  listenable: controller,
+                  builder: (context, child) {
+                    double factor = 1;
+                    if (controller.position.hasContentDimensions) {
+                      factor = 1 - (controller.page! - index).abs();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Center(
+                        child: SizedBox(
+                          height: 700 + (factor * 30),
+                          child: MonthCard(
+                            month: data['month'],
+                            year: data['year'],
+                            totalExpenses: data['totalExpenses'],
+                            totalIncome: data['totalIncome'],
+                            expensesByCategory: data['expensesByCategory'],
+                            incomesByCategory: data['incomesByCategory'],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
+                    );
+                  },
+                );
+              },
+            ),
           ),
         );
       },
